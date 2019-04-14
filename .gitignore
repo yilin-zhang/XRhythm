@@ -1,0 +1,8 @@
+/__pycache__
+/archives
+/pickle
+/processed_midi
+/raw_midi
+/statistics_figs
+*.log
+test.py
