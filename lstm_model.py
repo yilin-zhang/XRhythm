@@ -14,21 +14,22 @@ import pickle
 from midi_data import MidiData
 from utils import get_file_path
 
-DATASET_PATH = './dataset'
+# import constants
+from utils import DATASET_PATH, LENGTH_LIMIT
 
 
+# TODO The inner for loop is not finished
+# What is the batch size?
+# How many steps? LENGTH_LIMIT?
 # Import dataset
 def get_data(dataset_path):
     for data_path, data_file in get_file_path(dataset_path, '.pkl'):
         with open(data_path, 'rb') as f:
             phrase_data = pickle.load(f)
-        # ISSUE how to convert to proper batches?
-        # The problem is that the dataset is fixed-length, which means
-        # it is hard to select corresponding y (target).
-        # This should be fixed at get_dataset.py
         for phrase in phrase_data:
-            MidiData.note_to_multihot(phrase)
-        yield data
+            X = phrase[:LENGTH_LIMIT]
+            y = phrase[1:LENGTH_LIMIT + 1]
+            yield X, y
 
 
 # Convert note lists to multi-hot arrays

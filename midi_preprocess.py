@@ -5,8 +5,7 @@ import os
 from midi_data import MidiData
 from utils import get_file_path
 
-RAW_MIDI_PATH = './raw_midi'
-PROCESSED_MIDI_PATH_NAME = 'processed_midi'
+from utils import RAW_MIDI_PATH, PROCESSED_MIDI_PATH
 
 for midi_path, midi_file in get_file_path(RAW_MIDI_PATH, '.mid'):
     try:
@@ -21,8 +20,8 @@ for midi_path, midi_file in get_file_path(RAW_MIDI_PATH, '.mid'):
     midi.skyline()
 
     # Construct output path
-    path_components = midi_path.split('/')
-    path_components[1] = PROCESSED_MIDI_PATH_NAME
+    path_components = midi_path.split('/')[RAW_MIDI_PATH.split('/').__len__():]
+    path_components = PROCESSED_MIDI_PATH.split('/') + path_components
     output_path = '/'.join(path_components)
 
     # Output midi file

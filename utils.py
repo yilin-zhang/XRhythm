@@ -3,6 +3,11 @@
 
 import os
 
+RAW_MIDI_PATH = './raw_midi'
+PROCESSED_MIDI_PATH = './processed_midi'
+DATASET_PATH = './dataset'
+LENGTH_LIMIT = 20
+
 
 def get_file_path(directory, suffix):
     '''Generate the paths of all the given type files in the given directory.

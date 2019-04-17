@@ -5,7 +5,7 @@ from midi_data import MidiData
 from utils import get_file_path
 import pickle
 
-PROCESSED_MIDI_PATH = './processed_midi'
+from utils import PROCESSED_MIDI_PATH
 
 itv_freq = {}
 dur_freq = {}
