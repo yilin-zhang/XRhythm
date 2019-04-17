@@ -4,21 +4,22 @@
 import os
 
 
-def get_midi_path(directory):
-    '''Generate the paths of all the midi files in the given directory.
+def get_file_path(directory, suffix):
+    '''Generate the paths of all the given type files in the given directory.
     Arg:
-    - directory: The directory that contains midi files.
+    - directory: The directory that contains the files you need.
+    - suffix: The suffix of the file type.
 
     Return:
-    - midi_path: The midi file path.
-    - midi_file: The midi file name.
+    - path: The file path.
+    - file: The file name.
     '''
     for root, _, files in os.walk(directory):
-        for midi_file in files:
-            suffix = os.path.splitext(midi_file)[1]
+        for file_name in files:
+            current_suffix = os.path.splitext(file_name)[1]
 
-            if suffix != '.mid':
+            if current_suffix != suffix:
                 continue
 
-            midi_path = root + "/" + midi_file
-            yield midi_path, midi_file
+            path = root + "/" + file_name
+            yield path, file_name

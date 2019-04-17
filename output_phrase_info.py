@@ -2,14 +2,14 @@
 # Author: Yilin Zhang
 
 from midi_data import MidiData
-from utils import get_midi_path
+from utils import get_file_path
 import pickle
 
 # The midi path that contains midi with melody extracted
 PROCESSED_MIDI_PATH = './processed_midi'
 
 phrase_lengths = []
-for midi_path, midi_file in get_midi_path(PROCESSED_MIDI_PATH):
+for midi_path, midi_file in get_file_path(PROCESSED_MIDI_PATH, '.mid'):
     try:
         midi = MidiData(midi_path, res=1 / 16)
     except:

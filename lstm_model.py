@@ -8,9 +8,30 @@ from keras.layers import LSTM
 from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 
 # Internal import
 from midi_data import MidiData
+from utils import get_file_path
+
+DATASET_PATH = './dataset'
+
+
+# Import dataset
+def get_data(dataset_path):
+    for data_path, data_file in get_file_path(dataset_path, '.pkl'):
+        with open(data_path, 'rb') as f:
+            phrase_data = pickle.load(f)
+        # ISSUE how to convert to proper batches?
+        # The problem is that the dataset is fixed-length, which means
+        # it is hard to select corresponding y (target).
+        # This should be fixed at get_dataset.py
+        for phrase in phrase_data:
+            MidiData.note_to_multihot(phrase)
+        yield data
+
+
+# Convert note lists to multi-hot arrays
 
 # Data preparation
 raw_Data = [[[i + j] for j in range(5)] for i in range(100)]

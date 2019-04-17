@@ -5,5 +5,7 @@
 /raw_midi
 /statistics_figs
 /logs
+/dataset
 test.py
 dataset.tgz
+.projectile

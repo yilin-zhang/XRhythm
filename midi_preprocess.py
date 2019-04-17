@@ -3,12 +3,12 @@
 
 import os
 from midi_data import MidiData
-from utils import get_midi_path
+from utils import get_file_path
 
 RAW_MIDI_PATH = './raw_midi'
 PROCESSED_MIDI_PATH_NAME = 'processed_midi'
 
-for midi_path, midi_file in get_midi_path(RAW_MIDI_PATH):
+for midi_path, midi_file in get_file_path(RAW_MIDI_PATH, '.mid'):
     try:
         midi = MidiData(midi_path, res=1 / 16)
     except:
