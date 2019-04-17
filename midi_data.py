@@ -10,7 +10,7 @@ class MidiData():
     ''' Contains midi data (`pretty_midi.PrettyMIDI`) and other utility
     functions.
 
-    Variables:
+    Internal variables:
     - self.pm: `pretty_midi.PrettyMIDI` object.
     - self.res: Resolution for midi, the unit is bar (assume 4 beats a bar).
     - self.beats: The time stamps of All the
@@ -242,7 +242,7 @@ class MidiData():
         for note in notes:
             # TODO make sure use the smallest unit to save space
             # (interval, duartion, rest)
-            current_array = np.zeros(3, dtype=np.int16)
+            current_array = np.zeros(3, dtype=np.int8)
 
             # get the duration
             start = note.start

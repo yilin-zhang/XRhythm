@@ -4,5 +4,6 @@
 /processed_midi
 /raw_midi
 /statistics_figs
-*.log
+/logs
 test.py
+dataset.tgz

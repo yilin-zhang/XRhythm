@@ -1,9 +1,16 @@
+# -*-coding: utf-8-*-
+# Author: Yilin Zhang
+
+# External imports
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
+
+# Internal import
+from midi_data import MidiData
 
 # Data preparation
 raw_Data = [[[i + j] for j in range(5)] for i in range(100)]

@@ -42,7 +42,7 @@ def interval_stats(raw_list, interval, number):
 # itv_break = 0
 # dur_break = 0
 # res_break = 0
-# with open("phrase_info.log") as f:
+# with open("./logs/phrase_info.log") as f:
 #     for line in f:
 #         if re.search('^phrase break: interval', line):
 #             itv_break += 1
@@ -72,7 +72,7 @@ print(reserve)
 # neg_intervals = []
 # durations = []
 # rests = []
-# with open("info16.log") as f:
+# with open("./logs/info16.log") as f:
 #     for line in f:
 #         if re.search('^big_pos_itv:', line):
 #             pos_intervals.append(int(line.split()[1]))
