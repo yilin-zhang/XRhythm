@@ -143,3 +143,30 @@ def phrase_to_multihot(phrase):
         multihot_phrase[idx] = multihot_note
         idx += 1
     return multihot_phrase
+
+
+def multihot_to_note(multihot_note):
+    ''' Convert multi-hot array to an `np.array` note.
+    Arg:
+    - multihot_note: A multi-hot array that represents a note.
+    Return:
+    - note: An `np.array` note.
+    '''
+
+    interval_onehot = multihot_note[:INTERVAL_RANGE]
+    duration_onehot = multihot_note[INTERVAL_RANGE:INTERVAL_RANGE +
+                                    DURATION_RANGE]
+    rest_onehot = multihot_note[INTERVAL_RANGE + DURATION_RANGE:]
+
+    interval = np.dot(interval_onehot, np.arange(INTERVAL_RANGE))
+    duration = np.dot(duration_onehot, np.arange(DURATION_RANGE)) + 1
+    rest = np.dot(rest_onehot,
+                  np.arange(REST_RANGE)) - (INTERVAL_RANGE - 1) / 2
+
+    # Note that in midi_data, note_to_array_for_instrument uses np.int8 too.
+    note = np.zeros(3, dtype=np.int8)
+    note[0] = interval
+    note[1] = duration
+    note[2] = rest
+
+    return note

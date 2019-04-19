@@ -56,7 +56,7 @@ def gen_batch(dataset_path, n_steps, batch_size):
                 n_slice += 1
 
 
-# model parameters
+# Model parameters
 n_steps = LENGTH_LIMIT
 n_neurons = 100
 n_inputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
@@ -64,8 +64,6 @@ n_outputs = DURATION_RANGE + REST_RANGE
 batch_size = 10
 n_epochs = 100
 learning_rate = 0.001
-
-# Convert note lists to multi-hot arrays
 
 # Data preparation
 raw_Data = [[[i + j] for j in range(5)] for i in range(100)]

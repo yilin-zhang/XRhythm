@@ -242,6 +242,7 @@ class MidiData():
         for note in notes:
             # TODO make sure use the smallest unit to save space
             # (interval, duartion, rest)
+            # Note that in utils.py, function multihot_to_note uses np.int8 too.
             current_array = np.zeros(3, dtype=np.int8)
 
             # get the duration
