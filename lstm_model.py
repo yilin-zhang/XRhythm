@@ -12,7 +12,7 @@ import pickle
 
 # Internal import
 from midi_data import MidiData
-from utils import get_file_path
+from utils import get_file_path, phrase_to_multihot
 
 # import constants
 from utils import DATASET_PATH, LENGTH_LIMIT
@@ -48,9 +48,11 @@ def gen_batch(dataset_path, n_steps, batch_size):
                     X_batch = []
                     y_batch = []
                 X_batch.append(
-                    phrase[n_slice * n_steps:(n_slice + 1) * n_steps])
+                    phrase_to_multihot(
+                        phrase[n_slice * n_steps:(n_slice + 1) * n_steps]))
                 y_batch.append(
-                    phrase[n_slice * n_steps + 1:(n_slice + 1) * n_steps + 1])
+                    phrase_to_multihot(phrase[n_slice * n_steps +
+                                              1:(n_slice + 1) * n_steps + 1]))
                 n_slice += 1
 
 

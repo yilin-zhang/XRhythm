@@ -2,7 +2,7 @@
 # Author: Yilin Zhang
 
 from midi_data import MidiData
-from utils import get_file_path
+from utils import get_file_path, get_phrases
 import pickle
 import os
 
@@ -40,7 +40,7 @@ for midi_path, midi_file in get_file_path(PROCESSED_MIDI_PATH, '.mid'):
     instrument_list = midi.note_to_array()
 
     for note_list in instrument_list:
-        phrases = MidiData.get_phrases(note_list)
+        phrases = get_phrases(note_list)
         for phrase in phrases:
             if phrase.__len__() < LENGTH_LIMIT + 1:
                 continue
