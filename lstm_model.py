@@ -16,21 +16,52 @@ from utils import get_file_path
 
 # import constants
 from utils import DATASET_PATH, LENGTH_LIMIT
+from utils import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 
 
-# TODO The inner for loop is not finished
-# What is the batch size?
-# How many steps? LENGTH_LIMIT?
 # Import dataset
-def get_data(dataset_path):
+def gen_batch(dataset_path, n_steps, batch_size):
+    ''' Generate batch data from given dataset.
+    Args:
+    - dataset_path: The path to the dataset.
+    - n_steps: The steps of RNN.
+    - batch_size: batch size.
+
+    Returns:
+    - X_batch: The batch dataset as inputs.
+    - y_batch: The batch dataset as targets.
+    '''
+    X_batch = []
+    y_batch = []
     for data_path, data_file in get_file_path(dataset_path, '.pkl'):
         with open(data_path, 'rb') as f:
             phrase_data = pickle.load(f)
         for phrase in phrase_data:
-            X = phrase[:LENGTH_LIMIT]
-            y = phrase[1:LENGTH_LIMIT + 1]
-            yield X, y
+            n_slice = 0
+            # TODO In this case, some phrase fragments will be abandoned.
+            # eg. the phrase length is 25, then 0~20 can be reserved,
+            # but 21~24 will be abandoned.
+            # There might be some better solutions.
+            while (n_slice + 1) * n_steps + 1 <= phrase.__len__():
+                if X_batch.__len__() == batch_size:
+                    yield X_batch, y_batch
+                    X_batch = []
+                    y_batch = []
+                X_batch.append(
+                    phrase[n_slice * n_steps:(n_slice + 1) * n_steps])
+                y_batch.append(
+                    phrase[n_slice * n_steps + 1:(n_slice + 1) * n_steps + 1])
+                n_slice += 1
 
+
+# model parameters
+n_steps = LENGTH_LIMIT
+n_neurons = 100
+n_inputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
+n_outputs = DURATION_RANGE + REST_RANGE
+batch_size = 10
+n_epochs = 100
+learning_rate = 0.001
 
 # Convert note lists to multi-hot arrays
 

@@ -289,6 +289,8 @@ class MidiData():
         also represented as a list.
         '''
 
+        # Note that is should be the same with thier corresponding RANGE
+        # constants.
         INTERVAL_THRESHOLD = 20
         DURATION_THRESHOLD = 40
         REST_THRESHOLD = 32
@@ -392,6 +394,12 @@ class MidiData():
         Return:
         - multihot_note: An multi-hot array, which is an `np.array` object.
         '''
+
+        # This might be changed later.
+        # These three constants are also used in utils.py,
+        # remember to change them when change these.
+        # The reason I don't want to use the constant definition
+        # in utils.py is that I want this file to be independent.
         INTERVAL_RANGE = 20 * 2
         DURATION_RANGE = 40
         REST_RANGE = 32
@@ -415,3 +423,13 @@ class MidiData():
                                         rest_onehot))
 
         return multihot_note
+
+    @staticmethod
+    def phrase_to_multihot(phrase):
+        multihot_phrase = copy.deepcopy(phrase)
+        idx = 0
+        for note in phrase:
+            multihot_note = MidiData.note_to_multihot(note)
+            multihot_phrase[idx] = multihot_note
+            idx += 1
+        return multihot_phrase
