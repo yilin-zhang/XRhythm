@@ -10,13 +10,13 @@ PROCESSED_MIDI_PATH = './processed_midi'
 DATASET_PATH = './dataset'
 LENGTH_LIMIT = 20
 
-INTERVAL_RANGE = 20 * 2
-DURATION_RANGE = 40
-REST_RANGE = 32
-
 INTERVAL_THRESHOLD = 20
 DURATION_THRESHOLD = 40
 REST_THRESHOLD = 32
+
+INTERVAL_RANGE = INTERVAL_THRESHOLD * 2 + 1
+DURATION_RANGE = DURATION_THRESHOLD  # duration can not be 0
+REST_RANGE = REST_THRESHOLD + 1  # rest can be 0
 
 
 def get_file_path(directory, suffix):
@@ -113,7 +113,9 @@ def note_to_multihot(note):
     rest_onehot = np.zeros(REST_RANGE)
 
     # -INTERVAL_RANGE/2 is mapped to 0
-    interval_onehot[int(interval + INTERVAL_RANGE / 2)] = 1
+    # 0 is mapped to 20
+    # -20 is mapped to 0
+    interval_onehot[int(interval + (INTERVAL_RANGE - 1) / 2)] = 1
     # duration == 1 is mapped to 0
     duration_onehot[int(duration - 1)] = 1
     # rest == 0 is mapped to 0
