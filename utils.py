@@ -4,6 +4,7 @@
 import os
 import copy
 import numpy as np
+import pickle
 
 RAW_MIDI_PATH = './raw_midi'
 PROCESSED_MIDI_PATH = './processed_midi'
@@ -37,7 +38,7 @@ def get_file_path(directory, suffix):
                 continue
 
             path = root + "/" + file_name
-        yield path, file_name
+            yield path, file_name
 
 
 def get_phrases(note_list):
@@ -135,14 +136,8 @@ def phrase_to_multihot(phrase):
     Return:
     - multihot_note: An multi-hot array, which is an `np.array` object.
     '''
-
-    multihot_phrase = copy.deepcopy(phrase)
-    idx = 0
-    for note in phrase:
-        multihot_note = note_to_multihot(note)
-        multihot_phrase[idx] = multihot_note
-        idx += 1
-    return multihot_phrase
+    multihot_note = list(map(note_to_multihot, phrase))
+    return multihot_note
 
 
 def multihot_to_note(multihot_note):
@@ -170,3 +165,41 @@ def multihot_to_note(multihot_note):
     note[2] = rest
 
     return note
+
+
+# Import dataset
+def gen_batch(dataset_path, n_steps, batch_size):
+    ''' Generate batch data from given dataset.
+    Args:
+    - dataset_path: The path to the dataset.
+    - n_steps: The steps of RNN.
+    - batch_size: batch size.
+
+    Returns:
+    - X_batch: The batch dataset as inputs.
+    - y_batch: The batch dataset as targets.
+    '''
+    X_batch = []
+    y_batch = []
+    for data_path, data_file in get_file_path(dataset_path, '.pkl'):
+        print(data_path)
+        with open(data_path, 'rb') as f:
+            phrase_data = pickle.load(f)
+        for phrase in phrase_data:
+            n_slice = 0
+            # TODO In this case, some phrase fragments will be abandoned.
+            # eg. the phrase length is 25, then 0~20 can be reserved,
+            # but 21~24 will be abandoned.
+            # There might be some better solutions.
+            while (n_slice + 1) * n_steps + 1 <= phrase.__len__():
+                if X_batch.__len__() == batch_size:
+                    yield X_batch, y_batch
+                    X_batch = []
+                    y_batch = []
+                X_batch.append(
+                    phrase_to_multihot(
+                        phrase[n_slice * n_steps:(n_slice + 1) * n_steps]))
+                y_batch.append(
+                    phrase_to_multihot(phrase[n_slice * n_steps +
+                                              1:(n_slice + 1) * n_steps + 1]))
+                n_slice += 1

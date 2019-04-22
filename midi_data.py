@@ -44,8 +44,8 @@ class MidiData():
         '''Obtain instruments'''
         return self.pm.instruments
 
-    def write(self, midi_path):
-        self.pm.write(midi_path)
+    def write(self, path):
+        self.pm.write(path)
 
     def drop_drum(self):
         ''' Drop drum instruments in the PrettyMIDI object. The modification
@@ -218,7 +218,7 @@ class MidiData():
         monophony.
 
         Return:
-        - array_notes: A list that contains all the notes, which are converted
+        - note_list: A list that contains all the notes, which are converted
         to numpy arrays. The order: (interval, duartion, rest).
         '''
 
@@ -235,12 +235,15 @@ class MidiData():
         sec_unit = sec_per_beat * res_coef  # the time unit for quantization
 
         # all the elements are numpy arrays
-        array_notes = []
+        note_list = []
 
         last_end = 0
         last_pitch = 0
         for note in notes:
             # TODO make sure use the smallest unit to save space
+            # Notice that I have also trimmed the data to prevent overflow,
+            # which means if I need to change the dtype, I also have to change
+            # the trimming rule.
             # (interval, duartion, rest)
             # Note that in utils.py, function multihot_to_note uses np.int8 too.
             current_array = np.zeros(3, dtype=np.int8)
@@ -249,28 +252,40 @@ class MidiData():
             start = note.start
             end = note.end
             duration = round((end - start) / sec_unit)
+            # Trim the data to prevent overflow
+            if duration >= 128:
+                duration = 127
             current_array[1] = duration
 
             if last_end == 0:
                 # get the interval
                 interval = 0
                 current_array[0] = interval
-                # add current note to array_notes
-                array_notes.append(current_array)
+                # add current note to note_list
+                note_list.append(current_array)
             else:
                 # get the interval
                 interval = note.pitch - last_pitch
+                # Trim the data to prevent overflow
+                if interval >= 128:
+                    interval = 127
+                elif interval < -128:
+                    intervao = -128
                 current_array[0] = interval
+
                 # get the last note's rest
                 rest = round((note.start - last_end) / sec_unit)
-                array_notes[-1][2] = rest
-                # add current note to array_notes
-                array_notes.append(current_array)
+                # Trim the data to prevent overflow
+                if rest >= 128:
+                    rest = 127
+                note_list[-1][2] = rest
+                # add current note to note_list
+                note_list.append(current_array)
 
             last_pitch = note.pitch
             last_end = note.end
 
-        return array_notes
+        return note_list
 
     def note_to_array(self):
         instrument_list = []
@@ -294,6 +309,7 @@ class MidiData():
         note_list = copy.deepcopy(note_list)
 
         pm_melody = pretty_midi.PrettyMIDI()
+        # TODO The program name can be changed to piano.
         pm_melody_program = pretty_midi.instrument_name_to_program('Cello')
         pm_melody_instrument = pretty_midi.Instrument(
             program=pm_melody_program)
