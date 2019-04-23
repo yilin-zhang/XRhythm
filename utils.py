@@ -60,33 +60,23 @@ def get_phrases(note_list):
 
     for note in note_list:
 
-        if current_idx == 0:
-            current_idx += 1
-            continue
-
         interval = note[0]
         duration = note[1]
         rest = note[2]
 
         if interval > INTERVAL_THRESHOLD or interval < -INTERVAL_THRESHOLD:
             # TODO not sure if I should keep what it is, rather than make it 0
-            interval = 0
-            note[0] = interval
-            phrase_list.append(note_list[last_idx:current_idx])
+            note[0] = interval = 0
+            if last_idx < current_idx:
+                phrase_list.append(note_list[last_idx:current_idx])
             last_idx = current_idx
-            # print('phrase break: interval')
-        elif duration > DURATION_THRESHOLD:
-            duration = DURATION_THRESHOLD
-            note[1] = duration
+        if duration > DURATION_THRESHOLD or rest > REST_THRESHOLD:
+            if duration > DURATION_RANGE:
+                note[1] = duration = DURATION_THRESHOLD
+            if rest > REST_THRESHOLD:
+                note[2] = rest = REST_THRESHOLD
             phrase_list.append(note_list[last_idx:current_idx + 1])
             last_idx = current_idx + 1
-            # print('phrase break: duration')
-        elif rest > REST_THRESHOLD:
-            rest = REST_THRESHOLD
-            note[2] = rest
-            phrase_list.append(note_list[last_idx:current_idx + 1])
-            last_idx = current_idx + 1
-            # print('phrase break: rest')
 
         current_idx += 1
 
@@ -182,7 +172,6 @@ def gen_batch(dataset_path, n_steps, batch_size):
     X_batch = []
     y_batch = []
     for data_path, data_file in get_file_path(dataset_path, '.pkl'):
-        print(data_path)
         with open(data_path, 'rb') as f:
             phrase_data = pickle.load(f)
         for phrase in phrase_data:
@@ -193,7 +182,11 @@ def gen_batch(dataset_path, n_steps, batch_size):
             # There might be some better solutions.
             while (n_slice + 1) * n_steps + 1 <= phrase.__len__():
                 if X_batch.__len__() == batch_size:
-                    yield X_batch, y_batch
+                    # X_batch = np.swapaxes(np.array(X_batch), 0, 1)
+                    # y_batch = np.swapaxes(np.array(y_batch), 0, 1)
+                    X_batch = np.array(X_batch)
+                    y_batch = np.array(y_batch)
+                    yield (X_batch, y_batch)
                     X_batch = []
                     y_batch = []
                 X_batch.append(
