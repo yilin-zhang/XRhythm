@@ -51,20 +51,19 @@ def construct_dataset(path, proportion):
     n_val = round(n_files * val_prop)
 
     # create directory if it does not exist.
-    if not os.path.exists(path + '/training'):
-        os.makedirs(path + '/training')
-    if not os.path.exists(path + '/validation'):
-        os.makedirs(path + '/validation')
+    if not os.path.exists(path + '/train'):
+        os.makedirs(path + '/train')
+    if not os.path.exists(path + '/valid'):
+        os.makedirs(path + '/valid')
     if not os.path.exists(path + '/test'):
         os.makedirs(path + '/test')
 
     idx = 0
     for file_name in file_list:
         if idx < n_train:
-            os.rename(path + '/' + file_name, path + '/training/' + file_name)
+            os.rename(path + '/' + file_name, path + '/train/' + file_name)
         elif idx >= n_train and idx < n_train + n_val:
-            os.rename(path + '/' + file_name,
-                      path + '/validation/' + file_name)
+            os.rename(path + '/' + file_name, path + '/valid/' + file_name)
         else:
             os.rename(path + '/' + file_name, path + '/test/' + file_name)
         idx += 1

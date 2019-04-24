@@ -5,46 +5,63 @@
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
-from sklearn.model_selection import train_test_split
-import numpy as np
-import matplotlib.pyplot as plt
+from keras.optimizers import Adam
 
-# Internal import
-from midi_data import MidiData
-from utils import get_file_path, phrase_to_multihot, gen_batch
+# Internal imports
+from utils import gen_batch
 
 # import constants
 from utils import DATASET_PATH, LENGTH_LIMIT
 from utils import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 
-# Model parameters
+# Fixed model parameters
 n_steps = LENGTH_LIMIT
-n_neurons = 100
 n_inputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
-n_outputs = DURATION_RANGE + REST_RANGE
+n_outputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
+
+# Changable model parameters
+n_neurons = 64
 batch_size = 10
 n_epochs = 100
 learning_rate = 0.001
 
-# Data preparation
-raw_Data = [[[i + j] for j in range(5)] for i in range(100)]
-raw_target = [(i + 5) for i in range(100)]
-
-data = np.array(raw_Data, dtype=float)
-target = np.array(raw_target, dtype=float)
-
-x_train, x_test, y_train, y_test = train_test_split(
-    data, target, test_size=0.2, random_state=4)
-
-# RNN Model
+# Construct Model
 model = Sequential()
-model.add(LSTM((1), batch_input_shape=(None, 5, 1), return_sequences=False))
+
+model.add(
+    Dense(
+        n_neurons,
+        batch_input_shape=(batch_size, n_steps, n_inputs),
+        activation='relu'))
+
+model.add(
+    LSTM(
+        n_neurons,
+        batch_input_shape=(batch_size, n_steps, n_neurons),
+        activation='relu',
+        return_sequences=True))
+
+model.add(
+    LSTM(
+        n_neurons,
+        batch_input_shape=(batch_size, n_steps, n_neurons),
+        activation='relu',
+        return_sequences=True))
+
+model.add(Dense(n_outputs, activation='softmax'))
+
 model.compile(
-    loss='mean_absolute_error', optimizer='adam', metrics=['accuracy'])
+    optimizer=Adam(lr=learning_rate),
+    loss='categorical_crossentropy',
+    metrics=['accuracy'])
+
 model.summary()
+# Fit model
+gen = gen_batch('./dataset/train', n_steps, batch_size)
+model.fit_generator(gen, steps_per_epoch=8000, epochs=n_epochs)
 
-# Train
-history = model.fit(
-    x_train, y_train, epochs=50, validation_data=(x_test, y_test))
-
-results = model.predict(x_test)
+# # model.summary()
+# for step in range(n_epochs):
+#     X_batch, y_batch = next(gen)
+#     cost = model.train_on_batch(X_batch, y_batch)
+#     print(cost)
