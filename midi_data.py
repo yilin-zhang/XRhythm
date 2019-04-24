@@ -270,7 +270,7 @@ class MidiData():
                 if interval >= 128:
                     interval = 127
                 elif interval < -128:
-                    intervao = -128
+                    interval = -128
                 current_array[0] = interval
 
                 # get the last note's rest

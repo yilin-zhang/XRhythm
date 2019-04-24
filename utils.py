@@ -143,17 +143,13 @@ def multihot_to_note(multihot_note):
                                     DURATION_RANGE]
     rest_onehot = multihot_note[INTERVAL_RANGE + DURATION_RANGE:]
 
-    interval = np.dot(interval_onehot, np.arange(INTERVAL_RANGE))
+    interval = np.dot(interval_onehot,
+                      np.arange(INTERVAL_RANGE)) - INTERVAL_RANGE / 2
     duration = np.dot(duration_onehot, np.arange(DURATION_RANGE)) + 1
-    rest = np.dot(rest_onehot,
-                  np.arange(REST_RANGE)) - (INTERVAL_RANGE - 1) / 2
+    rest = np.dot(rest_onehot, np.arange(REST_RANGE))
 
     # Note that in midi_data, note_to_array_for_instrument uses np.int8 too.
-    note = np.zeros(3, dtype=np.int8)
-    note[0] = interval
-    note[1] = duration
-    note[2] = rest
-
+    note = np.array([interval, duration, rest], dtype=np.int8)
     return note
 
 
