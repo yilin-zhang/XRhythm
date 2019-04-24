@@ -22,11 +22,11 @@ REST_RANGE = REST_THRESHOLD + 1  # rest can be 0
 
 def get_file_path(directory, suffix):
     '''Generate the paths of all the given type files in the given directory.
-    Arg:
+    Args:
     - directory: The directory that contains the files you need.
     - suffix: The suffix of the file type.
 
-    Return:
+    Returns:
     - path: The file path.
     - file: The file name.
     '''
@@ -134,6 +134,7 @@ def multihot_to_note(multihot_note):
     ''' Convert multi-hot array to an `np.array` note.
     Arg:
     - multihot_note: A multi-hot array that represents a note.
+
     Return:
     - note: An `np.array` note.
     '''
@@ -153,7 +154,6 @@ def multihot_to_note(multihot_note):
     return note
 
 
-# Import dataset
 def gen_batch(dataset_path, n_steps, batch_size):
     ''' Generate batch data from given dataset.
     Args:
