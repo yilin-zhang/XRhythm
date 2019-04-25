@@ -165,30 +165,32 @@ def gen_batch(dataset_path, n_steps, batch_size):
     - X_batch: The batch dataset as inputs.
     - y_batch: The batch dataset as targets.
     '''
-    X_batch = []
-    y_batch = []
-    for data_path, data_file in get_file_path(dataset_path, '.pkl'):
-        with open(data_path, 'rb') as f:
-            phrase_data = pickle.load(f)
-        for phrase in phrase_data:
-            n_slice = 0
-            # TODO In this case, some phrase fragments will be abandoned.
-            # eg. the phrase length is 25, then 0~20 can be reserved,
-            # but 21~24 will be abandoned.
-            # There might be some better solutions.
-            while (n_slice + 1) * n_steps + 1 <= phrase.__len__():
-                if X_batch.__len__() == batch_size:
-                    # X_batch = np.swapaxes(np.array(X_batch), 0, 1)
-                    # y_batch = np.swapaxes(np.array(y_batch), 0, 1)
-                    X_batch = np.array(X_batch)
-                    y_batch = np.array(y_batch)
-                    yield (X_batch, y_batch)
-                    X_batch = []
-                    y_batch = []
-                X_batch.append(
-                    phrase_to_multihot(
-                        phrase[n_slice * n_steps:(n_slice + 1) * n_steps]))
-                y_batch.append(
-                    phrase_to_multihot(phrase[n_slice * n_steps +
-                                              1:(n_slice + 1) * n_steps + 1]))
-                n_slice += 1
+    while True:
+        X_batch = []
+        y_batch = []
+        for data_path, data_file in get_file_path(dataset_path, '.pkl'):
+            with open(data_path, 'rb') as f:
+                phrase_data = pickle.load(f)
+            for phrase in phrase_data:
+                n_slice = 0
+                # TODO In this case, some phrase fragments will be abandoned.
+                # eg. the phrase length is 25, then 0~20 can be reserved,
+                # but 21~24 will be abandoned.
+                # There might be some better solutions.
+                while (n_slice + 1) * n_steps + 1 <= phrase.__len__():
+                    if X_batch.__len__() == batch_size:
+                        # X_batch = np.swapaxes(np.array(X_batch), 0, 1)
+                        # y_batch = np.swapaxes(np.array(y_batch), 0, 1)
+                        X_batch = np.array(X_batch)
+                        y_batch = np.array(y_batch)
+                        yield (X_batch, y_batch)
+                        X_batch = []
+                        y_batch = []
+                    X_batch.append(
+                        phrase_to_multihot(
+                            phrase[n_slice * n_steps:(n_slice + 1) * n_steps]))
+                    y_batch.append(
+                        phrase_to_multihot(
+                            phrase[n_slice * n_steps +
+                                   1:(n_slice + 1) * n_steps + 1]))
+                    n_slice += 1

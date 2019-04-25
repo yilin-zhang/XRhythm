@@ -29,6 +29,10 @@ n_epochs = 100
 learning_rate = 0.001
 use_dropout = True
 
+# This variable is related to batch size.
+# obtain this number by running test.py
+steps_per_epoch = 81487
+
 # Set dataset path
 train_path = DATASET_PATH + '/train'
 valid_path = DATASET_PATH + '/valid'
@@ -56,7 +60,10 @@ model.summary()
 # Fit model
 gen_train = gen_batch(train_path, n_steps, batch_size)
 model.fit_generator(
-    gen_train, steps_per_epoch=8000, epochs=n_epochs, callbacks=[tb_callback])
+    gen_train,
+    steps_per_epoch=steps_per_epoch,
+    epochs=n_epochs,
+    callbacks=[tb_callback])
 
 model.save('lstm_model.h5')
 
