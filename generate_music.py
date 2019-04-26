@@ -13,32 +13,28 @@ from utils import LENGTH_LIMIT, INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 MODEL_PATH = './models/20190426/lstm_model.h5'
 
 
-def predicted_note_to_multihot(predicted_note):
+def predicted_note_to_multihot(predicted_partial_note):
     ''' Convert the float type predicted note to multi-hot array format.
 
     Arg:
-    - predicted_note: The predicted note array, which is float type.
+    - predicted_partial_note: The predicted note array, which is float type.
 
     Return:
-    - multihot_note: A multi-hot array.
+    - multihot_partial_note: A multi-hot array.
     '''
-    interval_part = predicted_note[:INTERVAL_RANGE]
-    duration_part = predicted_note[INTERVAL_RANGE:INTERVAL_RANGE +
-                                   DURATION_RANGE]
-    rest_part = predicted_note[INTERVAL_RANGE + DURATION_RANGE:]
+    duration_part = predicted_partial_note[:DURATION_RANGE]
+    rest_part = predicted_partial_note[DURATION_RANGE:DURATION_RANGE +
+                                       REST_RANGE]
 
-    interval_onehot = np.zeros(INTERVAL_RANGE)
     duration_onehot = np.zeros(DURATION_RANGE)
     rest_onehot = np.zeros(REST_RANGE)
 
-    interval_onehot[np.argmax(interval_part)] = 1
     duration_onehot[np.argmax(duration_part)] = 1
     rest_onehot[np.argmax(rest_part)] = 1
 
-    multihot_note = np.concatenate((interval_onehot, duration_onehot,
-                                    rest_onehot))
+    multihot_partial_note = np.concatenate((duration_onehot, rest_onehot))
 
-    return multihot_note
+    return multihot_partial_note
 
 
 def init_steps():
@@ -91,12 +87,14 @@ def generate_note_list_from_interval_list(model, interval_list):
 
         return interval_onehot
 
-    def construct_new_input(last_predicted_note, current_interval_onehot):
+    def construct_new_input(last_predicted_partial_note,
+                            current_interval_onehot):
         ''' Construct the float type predicted note for a new input for
         prediction purpose.
 
         Args:
-        - last_predicted_note: The predicted note array from the last step.
+        - last_predicted_partial_note: The predicted incomplete note array from
+        the last step.
         - currrent_interval_onehot: The current interval, which is a one-hot
         array.
 
@@ -105,12 +103,12 @@ def generate_note_list_from_interval_list(model, interval_list):
         '''
 
         # Convert the raw output array to multi-hot array
-        last_multihot_note = predicted_note_to_multihot(last_predicted_note)
+        last_multihot_partial_note = predicted_note_to_multihot(
+            last_predicted_partial_note)
 
         # Fetch duration one-hot array and rest one-hot array
-        duration_onehot = last_multihot_note[INTERVAL_RANGE:INTERVAL_RANGE +
-                                             DURATION_RANGE]
-        rest_onehot = last_multihot_note[INTERVAL_RANGE + DURATION_RANGE:]
+        duration_onehot = last_multihot_partial_note[:DURATION_RANGE]
+        rest_onehot = last_multihot_partial_note[DURATION_RANGE:]
 
         # Concatenate those three one-hot arrays
         multihot_note = np.concatenate((current_interval_onehot,

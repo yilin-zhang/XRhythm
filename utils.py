@@ -121,13 +121,13 @@ def note_to_multihot(note):
 def phrase_to_multihot(phrase):
     ''' Convert a list of notes to a list of `np.array` multi-hot arrays.
     Arg:
-    - note: A note, which is an `np.array` object.
+    - phrase: A phrase, which is a list that contains many `np.array` objects.
 
     Return:
-    - multihot_note: An multi-hot array, which is an `np.array` object.
+    - multihot_notes: A list that contains many multi-hot arrays.
     '''
-    multihot_note = list(map(note_to_multihot, phrase))
-    return multihot_note
+    multihot_notes = list(map(note_to_multihot, phrase))
+    return multihot_notes
 
 
 def multihot_to_note(multihot_note):
@@ -165,6 +165,37 @@ def gen_batch(dataset_path, n_steps, batch_size):
     - X_batch: The batch dataset as inputs.
     - y_batch: The batch dataset as targets.
     '''
+
+    def trim_multihot_note(multihot_note):
+        ''' Trim the multi-hot note to only contain duration and rest.
+        Arg:
+        - multihot_note: A multi-hot note array.
+
+        Return:
+        - trimmed_multihot_note: A multi-hot note that only contains duration
+        and rest.
+        '''
+        duration_onehot = multihot_note[INTERVAL_RANGE:INTERVAL_RANGE +
+                                        DURATION_RANGE]
+        rest_onehot = multihot_note[INTERVAL_RANGE + DURATION_RANGE:]
+        trimmed_multihot_note = np.concatenate((duration_onehot, rest_onehot))
+
+        return trimmed_multihot_note
+
+    def trim_multihot_phrase(multihot_phrase):
+        ''' Apply trim_multihot_note to every note in the phrase.
+        Arg:
+        - multihot_phrase: A multi-hot phrase (note list).
+
+        Return:
+        - trimmed_multihot_phrase: A multi-hot phrase (note list) that only
+        contains duration and rest.
+        '''
+
+        trimmed_multihot_phrase = list(
+            map(trim_multihot_note, multihot_phrase))
+        return trimmed_multihot_phrase
+
     while True:
         X_batch = []
         y_batch = []
@@ -190,7 +221,8 @@ def gen_batch(dataset_path, n_steps, batch_size):
                         phrase_to_multihot(
                             phrase[n_slice * n_steps:(n_slice + 1) * n_steps]))
                     y_batch.append(
-                        phrase_to_multihot(
-                            phrase[n_slice * n_steps +
-                                   1:(n_slice + 1) * n_steps + 1]))
+                        trim_multihot_phrase(
+                            phrase_to_multihot(
+                                phrase[n_slice * n_steps +
+                                       1:(n_slice + 1) * n_steps + 1])))
                     n_slice += 1

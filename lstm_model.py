@@ -19,20 +19,18 @@ from utils import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 # Fixed model parameters
 n_steps = LENGTH_LIMIT
 n_inputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
-n_outputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
+n_outputs = DURATION_RANGE + REST_RANGE
 
 # Changeable model parameters (hyper parameters)
-n_lstm_layers = 2
 n_neurons = 256
-batch_size = 10
+batch_size = 40
 n_epochs = 100
 learning_rate = 0.001
-use_dropout = True
 dropout_rate = 0.3
 
 # This variable is related to batch size.
 # obtain this number by running test.py
-steps_per_epoch = 81487
+steps_per_epoch = 20371
 
 # Set dataset path
 train_path = DATASET_PATH + '/train'
@@ -40,11 +38,21 @@ valid_path = DATASET_PATH + '/valid'
 
 # Construct Model
 model = Sequential()
-model.add(Dense(n_neurons, input_shape=(n_steps, n_inputs), activation='relu'))
-for _ in range(n_lstm_layers):
-    model.add(LSTM(n_neurons, activation='relu', return_sequences=True))
-    if use_dropout:
-        model.add(Dropout(dropout_rate))
+# model.add(Dense(n_neurons, input_shape=(n_steps, n_inputs), activation='relu'))
+model.add(
+    LSTM(
+        n_neurons,
+        input_shape=(n_steps, n_inputs),
+        activation='relu',
+        return_sequences=True))
+model.add(Dropout(dropout_rate))
+model.add(
+    LSTM(
+        n_neurons,
+        input_shape=(n_steps, n_inputs),
+        activation='relu',
+        return_sequences=True))
+model.add(Dropout(dropout_rate))
 model.add(Dense(n_outputs, activation='softmax'))
 
 model.compile(
