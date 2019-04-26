@@ -41,37 +41,30 @@ def predicted_note_to_multihot(predicted_note):
     return multihot_note
 
 
-def construct_steps(multihot_notes):
-    ''' Construct all the steps for input, which may contain random arrays
-
-    Arg:
-    - multihot_notes: A list that contains multihot_notes, whose length
-    can be less than the number of steps.
+def init_steps():
+    ''' Randomly initialize all steps for model's input.
 
     Return:
-    - model_input: The input array that contains both random arrays and
-    actual multi-hot notes.
+    - model_input: The input array that contains random arrays.
     '''
 
     def generate_random_array():
         ''' Generate random array for model's input.'''
         return np.random.rand(INTERVAL_RANGE + DURATION_RANGE + REST_RANGE)
 
-    n_random_steps = LENGTH_LIMIT - multihot_notes.__len__()
     random_steps = []
 
     # Only when the multihot_notes less than the number of steps,
     # generate random steps
-    if n_random_steps > 0:
-        for _ in range(n_random_steps):
-            random_steps.append(generate_random_array())
+    for _ in range(LENGTH_LIMIT):
+        random_steps.append(generate_random_array())
 
-    model_input = np.array(random_steps + multihot_notes)
+    model_input = np.array(random_steps)
 
     return model_input
 
 
-def generate_note_list_from_intervals(model, interval_list):
+def generate_note_list_from_interval_list(model, interval_list):
     ''' Generate note_list (melody) form an interval list.
 
     Args:
@@ -99,28 +92,34 @@ def generate_note_list_from_intervals(model, interval_list):
         return interval_onehot
 
     def construct_new_input(last_predicted_note, current_interval_onehot):
-        ''' Construct the float type predicted note for a new input for prediction
-        purpose.
+        ''' Construct the float type predicted note for a new input for
+        prediction purpose.
 
         Args:
         - last_predicted_note: The predicted note array from the last step.
-        - currrent_interval_onehot: The current interval, which is a one-hot array.
+        - currrent_interval_onehot: The current interval, which is a one-hot
+        array.
 
         Return:
         - multihot_note: A multi-hot array.
         '''
 
+        # Convert the raw output array to multi-hot array
         last_multihot_note = predicted_note_to_multihot(last_predicted_note)
+
+        # Fetch duration one-hot array and rest one-hot array
         duration_onehot = last_multihot_note[INTERVAL_RANGE:INTERVAL_RANGE +
                                              DURATION_RANGE]
         rest_onehot = last_multihot_note[INTERVAL_RANGE + DURATION_RANGE:]
 
+        # Concatenate those three one-hot arrays
         multihot_note = np.concatenate((current_interval_onehot,
                                         duration_onehot, rest_onehot))
 
         return multihot_note
 
-    model_input = construct_steps([])
+    multihot_notes = []
+    model_input = init_steps()
     for step in range(interval_list.__len__()):
         prediction = model.predict(
             model_input.reshape(1, LENGTH_LIMIT,
@@ -131,12 +130,10 @@ def generate_note_list_from_intervals(model, interval_list):
         # the second index is -1 because we only need the last output.
         new_input = construct_new_input(
             prediction[0][-1], interval_to_onehot(interval_list[step]))
-        # print(new_input)
+        # Add new_input to multihot_notes
+        multihot_notes.append(new_input)
+        # Reconstruct model_input
         model_input = np.vstack([model_input[1:], new_input])
-
-    # After the for loop above, the model_input is exactly the multi-hot notes
-    # we want.
-    multihot_notes = model_input[-interval_list.__len__():]
 
     # Generate note list.
     note_list = []
@@ -149,8 +146,8 @@ def generate_note_list_from_intervals(model, interval_list):
 if __name__ == '__main__':
     model = load_model(MODEL_PATH)
 
-    interval_list = [3, 6, -2, 4, 0]
-    note_list = generate_note_list_from_intervals(model, interval_list)
+    interval_list = [3, 6, -2, 4, 0] * 5
+    note_list = generate_note_list_from_interval_list(model, interval_list)
     print(note_list)
     # melody = MidiData.note_list_to_mididata(note_list)
     # melody.write('./melody.mid')
