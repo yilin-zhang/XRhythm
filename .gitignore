@@ -6,6 +6,7 @@
 /statistics_figs
 /logs
 /dataset
+/models
 test.py
 dataset.tgz
 dataset.zip

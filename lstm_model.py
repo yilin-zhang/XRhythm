@@ -28,6 +28,7 @@ batch_size = 10
 n_epochs = 100
 learning_rate = 0.001
 use_dropout = True
+dropout_rate = 0.3
 
 # This variable is related to batch size.
 # obtain this number by running test.py
@@ -42,8 +43,8 @@ model = Sequential()
 model.add(Dense(n_neurons, input_shape=(n_steps, n_inputs), activation='relu'))
 for _ in range(n_lstm_layers):
     model.add(LSTM(n_neurons, activation='relu', return_sequences=True))
-if use_dropout:
-    model.add(Dropout(0.5))
+    if use_dropout:
+        model.add(Dropout(dropout_rate))
 model.add(Dense(n_outputs, activation='softmax'))
 
 model.compile(
