@@ -2,7 +2,6 @@
 # Author: Yilin Zhang
 
 # External imports
-# from keras.models import Sequential
 from keras.models import Model
 from keras.layers import Input, Dense, LSTM, Dropout
 from keras.optimizers import Adam
@@ -23,15 +22,13 @@ n_outputs = DURATION_RANGE + REST_RANGE
 # Changeable model parameters (hyper parameters)
 n_neurons = 256
 batch_size = 40
-# n_epochs = 100
-n_epochs = 1
+n_epochs = 50
 learning_rate = 0.001
 dropout_rate = 0.3
 
 # This variable is related to batch size.
 # obtain this number by running test.py
-# steps_per_epoch = 20371
-steps_per_epoch = 10
+steps_per_epoch = 20371
 
 # Set dataset path
 train_path = DATASET_PATH + '/train'
@@ -49,7 +46,7 @@ rest_output = Dense(REST_RANGE, activation='softmax', name='rest_output')(x)
 model = Model(inputs=model_input, outputs=[duration_output, rest_output])
 
 model.compile(
-    optimizer='Adam',
+    optimizer=Adam(lr=learning_rate),
     loss={
         'duration_output': 'categorical_crossentropy',
         'rest_output': 'categorical_crossentropy'
@@ -59,29 +56,6 @@ model.compile(
         'rest_output': 0.5
     },
     metrics=['accuracy'])
-
-# model = Sequential()
-# # model.add(Dense(n_neurons, input_shape=(n_steps, n_inputs), activation='relu'))
-# model.add(
-#     LSTM(
-#         n_neurons,
-#         input_shape=(n_steps, n_inputs),
-#         activation='relu',
-#         return_sequences=True))
-# model.add(Dropout(dropout_rate))
-# model.add(
-#     LSTM(
-#         n_neurons,
-#         input_shape=(n_steps, n_inputs),
-#         activation='relu',
-#         return_sequences=True))
-# model.add(Dropout(dropout_rate))
-# model.add(Dense(n_outputs, activation='softmax'))
-
-# model.compile(
-#     optimizer=Adam(lr=learning_rate),
-#     loss='categorical_crossentropy',
-#     metrics=['categorical_accuracy'])
 
 # Set tensorboard callback
 tb_callback = TensorBoard(log_dir='./logs', batch_size=batch_size)
@@ -98,8 +72,3 @@ model.fit_generator(
     callbacks=[tb_callback])
 
 model.save('lstm_model.h5')
-
-# for step in range(n_epochs):
-#     X_batch, y_batch = next(gen)
-#     cost = model.train_on_batch(X_batch, y_batch)
-#     print(cost)
