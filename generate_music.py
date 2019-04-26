@@ -10,27 +10,27 @@ from midi_data import MidiData
 from utils import multihot_to_note
 from utils import LENGTH_LIMIT, INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 
-MODEL_PATH = './models/20190426/lstm_model.h5'
+# MODEL_PATH = './models/20190426/lstm_model.h5'
+MODEL_PATH = './models/20190426-dev/lstm_model.h5'
 
 
-def predicted_note_to_multihot(predicted_partial_note):
+def predicted_note_to_multihot(predicted_duration, predicted_rest):
     ''' Convert the float type predicted note to multi-hot array format.
 
-    Arg:
-    - predicted_partial_note: The predicted note array, which is float type.
+    Args:
+    - predicted_duration: The predicted duration array, whose element is float
+    type.
+    - predicted_rest: The predicted rest array.
 
     Return:
     - multihot_partial_note: A multi-hot array.
     '''
-    duration_part = predicted_partial_note[:DURATION_RANGE]
-    rest_part = predicted_partial_note[DURATION_RANGE:DURATION_RANGE +
-                                       REST_RANGE]
 
     duration_onehot = np.zeros(DURATION_RANGE)
     rest_onehot = np.zeros(REST_RANGE)
 
-    duration_onehot[np.argmax(duration_part)] = 1
-    rest_onehot[np.argmax(rest_part)] = 1
+    duration_onehot[np.argmax(predicted_duration)] = 1
+    rest_onehot[np.argmax(predicted_rest)] = 1
 
     multihot_partial_note = np.concatenate((duration_onehot, rest_onehot))
 
@@ -87,16 +87,14 @@ def generate_note_list_from_interval_list(model, interval_list):
 
         return interval_onehot
 
-    def construct_new_input(last_predicted_partial_note,
+    def construct_new_input(last_predicted_duration, last_predicted_rest,
                             current_interval_onehot):
-        ''' Construct the float type predicted note for a new input for
+        ''' Construct the float type predicted attributes for a new input for
         prediction purpose.
 
         Args:
-        - last_predicted_partial_note: The predicted incomplete note array from
-        the last step.
-        - currrent_interval_onehot: The current interval, which is a one-hot
-        array.
+        - last_predicted_duration: The last predicted duration array.
+        - last_predicted_rest: The last predicted rest array.
 
         Return:
         - multihot_note: A multi-hot array.
@@ -104,15 +102,11 @@ def generate_note_list_from_interval_list(model, interval_list):
 
         # Convert the raw output array to multi-hot array
         last_multihot_partial_note = predicted_note_to_multihot(
-            last_predicted_partial_note)
-
-        # Fetch duration one-hot array and rest one-hot array
-        duration_onehot = last_multihot_partial_note[:DURATION_RANGE]
-        rest_onehot = last_multihot_partial_note[DURATION_RANGE:]
+            last_predicted_duration, last_predicted_rest)
 
         # Concatenate those three one-hot arrays
         multihot_note = np.concatenate((current_interval_onehot,
-                                        duration_onehot, rest_onehot))
+                                        last_multihot_partial_note))
 
         return multihot_note
 
@@ -126,8 +120,11 @@ def generate_note_list_from_interval_list(model, interval_list):
             verbose=0)
         # the first index is 0 because the batch size is 1.
         # the second index is -1 because we only need the last output.
+        last_predicted_duration = prediction[0][0][-1]
+        last_predicted_rest = prediction[1][0][-1]
         new_input = construct_new_input(
-            prediction[0][-1], interval_to_onehot(interval_list[step]))
+            last_predicted_duration, last_predicted_rest,
+            interval_to_onehot(interval_list[step]))
         # Add new_input to multihot_notes
         multihot_notes.append(new_input)
         # Reconstruct model_input
@@ -154,6 +151,6 @@ if __name__ == '__main__':
     # note = np.array([-2, 5, 3])
     # phrase = [note] * 20
     # multihot_input = np.array(phrase_to_multihot(phrase)).reshape(
-    #     1, LENGTH_LIMIT, INTERVAL_RANGE + DURATION_RANGE + REST_RANGE)
+    # 1, LENGTH_LIMIT, INTERVAL_RANGE + DURATION_RANGE + REST_RANGE)
     # predictions = model.predict(multihot_input, batch_size=1, verbose=0)
     # print(predictions)

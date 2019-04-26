@@ -166,39 +166,28 @@ def gen_batch(dataset_path, n_steps, batch_size):
     - y_batch: The batch dataset as targets.
     '''
 
-    def trim_multihot_note(multihot_note):
-        ''' Trim the multi-hot note to only contain duration and rest.
-        Arg:
-        - multihot_note: A multi-hot note array.
+    def select_duration_for_phrase(multihot_phrase):
+        def select_duration_onehot(multihot_note):
+            duration_onehot = multihot_note[INTERVAL_RANGE:INTERVAL_RANGE +
+                                            DURATION_RANGE]
+            return duration_onehot
 
-        Return:
-        - trimmed_multihot_note: A multi-hot note that only contains duration
-        and rest.
-        '''
-        duration_onehot = multihot_note[INTERVAL_RANGE:INTERVAL_RANGE +
-                                        DURATION_RANGE]
-        rest_onehot = multihot_note[INTERVAL_RANGE + DURATION_RANGE:]
-        trimmed_multihot_note = np.concatenate((duration_onehot, rest_onehot))
+        duration_onehoe_phrase = list(
+            map(select_duration_onehot, multihot_phrase))
+        return duration_onehoe_phrase
 
-        return trimmed_multihot_note
+    def select_rest_for_phrase(multihot_phrase):
+        def select_rest_onehot(multihot_note):
+            rest_onehot = multihot_note[INTERVAL_RANGE + DURATION_RANGE:]
+            return rest_onehot
 
-    def trim_multihot_phrase(multihot_phrase):
-        ''' Apply trim_multihot_note to every note in the phrase.
-        Arg:
-        - multihot_phrase: A multi-hot phrase (note list).
-
-        Return:
-        - trimmed_multihot_phrase: A multi-hot phrase (note list) that only
-        contains duration and rest.
-        '''
-
-        trimmed_multihot_phrase = list(
-            map(trim_multihot_note, multihot_phrase))
-        return trimmed_multihot_phrase
+        rest_onehoe_phrase = list(map(select_rest_onehot, multihot_phrase))
+        return rest_onehoe_phrase
 
     while True:
         X_batch = []
-        y_batch = []
+        duration_batch = []
+        rest_batch = []
         for data_path, data_file in get_file_path(dataset_path, '.pkl'):
             with open(data_path, 'rb') as f:
                 phrase_data = pickle.load(f)
@@ -213,15 +202,25 @@ def gen_batch(dataset_path, n_steps, batch_size):
                         # X_batch = np.swapaxes(np.array(X_batch), 0, 1)
                         # y_batch = np.swapaxes(np.array(y_batch), 0, 1)
                         X_batch = np.array(X_batch)
-                        y_batch = np.array(y_batch)
-                        yield (X_batch, y_batch)
+                        duration_batch = np.array(duration_batch)
+                        rest_batch = np.array(rest_batch)
+                        yield (X_batch, {
+                            'duration_output': duration_batch,
+                            'rest_output': rest_batch
+                        })
                         X_batch = []
-                        y_batch = []
+                        duration_batch = []
+                        rest_batch = []
                     X_batch.append(
                         phrase_to_multihot(
                             phrase[n_slice * n_steps:(n_slice + 1) * n_steps]))
-                    y_batch.append(
-                        trim_multihot_phrase(
+                    duration_batch.append(
+                        select_duration_for_phrase(
+                            phrase_to_multihot(
+                                phrase[n_slice * n_steps +
+                                       1:(n_slice + 1) * n_steps + 1])))
+                    rest_batch.append(
+                        select_rest_for_phrase(
                             phrase_to_multihot(
                                 phrase[n_slice * n_steps +
                                        1:(n_slice + 1) * n_steps + 1])))

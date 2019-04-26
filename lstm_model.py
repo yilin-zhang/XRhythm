@@ -2,10 +2,9 @@
 # Author: Yilin Zhang
 
 # External imports
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
-from keras.layers import Dropout
+# from keras.models import Sequential
+from keras.models import Model
+from keras.layers import Input, Dense, LSTM, Dropout
 from keras.optimizers import Adam
 from keras.callbacks import TensorBoard
 
@@ -24,41 +23,65 @@ n_outputs = DURATION_RANGE + REST_RANGE
 # Changeable model parameters (hyper parameters)
 n_neurons = 256
 batch_size = 40
-n_epochs = 100
+# n_epochs = 100
+n_epochs = 1
 learning_rate = 0.001
 dropout_rate = 0.3
 
 # This variable is related to batch size.
 # obtain this number by running test.py
-steps_per_epoch = 20371
+# steps_per_epoch = 20371
+steps_per_epoch = 10
 
 # Set dataset path
 train_path = DATASET_PATH + '/train'
 valid_path = DATASET_PATH + '/valid'
 
-# Construct Model
-model = Sequential()
-# model.add(Dense(n_neurons, input_shape=(n_steps, n_inputs), activation='relu'))
-model.add(
-    LSTM(
-        n_neurons,
-        input_shape=(n_steps, n_inputs),
-        activation='relu',
-        return_sequences=True))
-model.add(Dropout(dropout_rate))
-model.add(
-    LSTM(
-        n_neurons,
-        input_shape=(n_steps, n_inputs),
-        activation='relu',
-        return_sequences=True))
-model.add(Dropout(dropout_rate))
-model.add(Dense(n_outputs, activation='softmax'))
+# # Construct Model
+model_input = Input(shape=(n_steps, n_inputs))
+x = LSTM(n_neurons, activation='relu', return_sequences=True)(model_input)
+x = Dropout(dropout_rate)(x)
+x = LSTM(n_neurons, activation='relu', return_sequences=True)(x)
+x = Dropout(dropout_rate)(x)
+duration_output = Dense(
+    DURATION_RANGE, activation='softmax', name='duration_output')(x)
+rest_output = Dense(REST_RANGE, activation='softmax', name='rest_output')(x)
+model = Model(inputs=model_input, outputs=[duration_output, rest_output])
 
 model.compile(
-    optimizer=Adam(lr=learning_rate),
-    loss='categorical_crossentropy',
-    metrics=['categorical_accuracy'])
+    optimizer='Adam',
+    loss={
+        'duration_output': 'categorical_crossentropy',
+        'rest_output': 'categorical_crossentropy'
+    },
+    loss_weights={
+        'duration_output': 0.5,
+        'rest_output': 0.5
+    },
+    metrics=['accuracy'])
+
+# model = Sequential()
+# # model.add(Dense(n_neurons, input_shape=(n_steps, n_inputs), activation='relu'))
+# model.add(
+#     LSTM(
+#         n_neurons,
+#         input_shape=(n_steps, n_inputs),
+#         activation='relu',
+#         return_sequences=True))
+# model.add(Dropout(dropout_rate))
+# model.add(
+#     LSTM(
+#         n_neurons,
+#         input_shape=(n_steps, n_inputs),
+#         activation='relu',
+#         return_sequences=True))
+# model.add(Dropout(dropout_rate))
+# model.add(Dense(n_outputs, activation='softmax'))
+
+# model.compile(
+#     optimizer=Adam(lr=learning_rate),
+#     loss='categorical_crossentropy',
+#     metrics=['categorical_accuracy'])
 
 # Set tensorboard callback
 tb_callback = TensorBoard(log_dir='./logs', batch_size=batch_size)
