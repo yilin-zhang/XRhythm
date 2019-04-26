@@ -145,7 +145,7 @@ def multihot_to_note(multihot_note):
     rest_onehot = multihot_note[INTERVAL_RANGE + DURATION_RANGE:]
 
     interval = np.dot(interval_onehot,
-                      np.arange(INTERVAL_RANGE)) - INTERVAL_RANGE / 2
+                      np.arange(INTERVAL_RANGE)) - (INTERVAL_RANGE - 1) / 2
     duration = np.dot(duration_onehot, np.arange(DURATION_RANGE)) + 1
     rest = np.dot(rest_onehot, np.arange(REST_RANGE))
 
