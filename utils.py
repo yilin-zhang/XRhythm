@@ -9,6 +9,10 @@ import pickle
 RAW_MIDI_PATH = './raw_midi'
 PROCESSED_MIDI_PATH = './processed_midi'
 DATASET_PATH = './dataset'
+
+RESOLUTION = 1 / 16
+FILTER_RESOLUTION = 1 / 16
+
 LENGTH_LIMIT = 20
 
 INTERVAL_THRESHOLD = 20

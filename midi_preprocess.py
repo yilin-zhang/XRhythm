@@ -5,18 +5,20 @@ import os
 from midi_data import MidiData
 from utils import get_file_path
 
+# import constants
 from utils import RAW_MIDI_PATH, PROCESSED_MIDI_PATH
+from utils import RESOLUTION, FILTER_RESOLUTION
 
 for midi_path, midi_file in get_file_path(RAW_MIDI_PATH, '.mid'):
     try:
-        midi = MidiData(midi_path, res=1 / 16)
+        midi = MidiData(midi_path, res=RESOLUTION)
     except:
         print('corrupted: ' + midi_path)
         continue
 
     # Process midi
     midi.drop_drum()
-    midi.quantize(filter_res=1 / 16)
+    midi.quantize(filter_res=FILTER_RESOLUTION)
     midi.skyline()
 
     # Construct output path
