@@ -26,9 +26,12 @@ n_epochs = 50
 learning_rate = 0.001
 dropout_rate = 0.3
 
-# This variable is related to batch size.
-# obtain this number by running test.py
+# These variables are related to batch size.
+# Obtain these two numbers by running test.py
+# Note that you MUST remove the outermost loop
+# in the function gen_batch (the definition is in utils.py).
 steps_per_epoch = 20371
+validation_steps = 4472
 
 # Set dataset path
 train_path = DATASET_PATH + '/train'
@@ -37,6 +40,8 @@ valid_path = DATASET_PATH + '/valid'
 # # Construct Model
 model_input = Input(shape=(n_steps, n_inputs))
 x = LSTM(n_neurons, activation='relu', return_sequences=True)(model_input)
+x = Dropout(dropout_rate)(x)
+x = LSTM(n_neurons, activation='relu', return_sequences=True)(x)
 x = Dropout(dropout_rate)(x)
 x = LSTM(n_neurons, activation='relu', return_sequences=True)(x)
 x = Dropout(dropout_rate)(x)
@@ -65,10 +70,15 @@ model.summary()
 
 # Fit model
 gen_train = gen_batch(train_path, n_steps, batch_size)
+gen_valid = gen_batch(valid_path, n_steps, batch_size)
 model.fit_generator(
     gen_train,
     steps_per_epoch=steps_per_epoch,
     epochs=n_epochs,
-    callbacks=[tb_callback])
+    validation_data=gen_valid,
+    validation_steps=validation_steps,
+    callbacks=[tb_callback],
+    workers=2,
+    use_multiprocessing=True)
 
 model.save('lstm_model.h5')
