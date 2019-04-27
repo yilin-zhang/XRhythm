@@ -3,7 +3,7 @@
 
 # External imports
 from keras.models import Model
-from keras.layers import Input, Dense, LSTM, Dropout
+from keras.layers import Input, Dense, LSTM, Dropout, LeakyReLU
 from keras.optimizers import Adam
 from keras.callbacks import TensorBoard
 
@@ -39,11 +39,14 @@ valid_path = DATASET_PATH + '/valid'
 
 # # Construct Model
 model_input = Input(shape=(n_steps, n_inputs))
-x = LSTM(n_neurons, activation='relu', return_sequences=True)(model_input)
+x = LSTM(n_neurons, activation='linear', return_sequences=True)(model_input)
+x = LeakyReLU()(x)
 x = Dropout(dropout_rate)(x)
-x = LSTM(n_neurons, activation='relu', return_sequences=True)(x)
+x = LSTM(n_neurons, activation='linear', return_sequences=True)(x)
+x = LeakyReLU()(x)
 x = Dropout(dropout_rate)(x)
-x = LSTM(n_neurons, activation='relu', return_sequences=True)(x)
+x = LSTM(n_neurons, activation='linear', return_sequences=True)(x)
+x = LeakyReLU()(x)
 x = Dropout(dropout_rate)(x)
 duration_output = Dense(
     DURATION_RANGE, activation='softmax', name='duration_output')(x)
