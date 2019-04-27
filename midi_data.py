@@ -295,12 +295,14 @@ class MidiData():
         return instrument_list
 
     @staticmethod
-    def note_list_to_mididata(note_list, start_pitch=60, time_per_unit=0.1):
+    def note_list_to_mididata(note_list, start_pitch=60, tempo=100,
+                              res=1 / 16):
         ''' Convert a phrase to a `MidiData` object.
         Args:
         - note_list: A list object corresponding to an instrument.
         - start_pitch: The pitch of the first note.
         - time_per_unit: The actual time (represented as second) of one time
+        - res: resolution (the minimum beat)
         unit.
 
         Return:
@@ -308,7 +310,13 @@ class MidiData():
         '''
         note_list = copy.deepcopy(note_list)
 
-        pm_melody = pretty_midi.PrettyMIDI()
+        time_per_unit = 60 * 4 * res / tempo
+        # time_per_unit = 0.12
+        print('time_per_unit:', time_per_unit)
+
+        # resolution: ticks per quarter note
+        # tempo: beats (quarter note) per minute
+        pm_melody = pretty_midi.PrettyMIDI(initial_tempo=tempo)
         # TODO The program name can be changed to piano.
         pm_melody_program = pretty_midi.instrument_name_to_program('Cello')
         pm_melody_instrument = pretty_midi.Instrument(

@@ -164,7 +164,7 @@ def generate_note_list_from_bar_list(model, bar_list):
             return total_units
 
         note_list = copy.deepcopy(note_list)
-        units_per_bar = 4 / RESOLUTION
+        units_per_bar = 1 / RESOLUTION
 
         # The number of notes can note be more than
         # units_per_bar, otherwise some note can not sound.
@@ -308,7 +308,7 @@ if __name__ == '__main__':
     for note in note_list:
         total_units += note[1] + note[2]
     print('total_units:', total_units)
-    melody = MidiData.note_list_to_mididata(note_list)
+    melody = MidiData.note_list_to_mididata(note_list, res=RESOLUTION)
     melody.write('./melody.mid')
 
     # The following part is for test
