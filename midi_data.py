@@ -316,7 +316,8 @@ class MidiData():
         # tempo: beats (quarter note) per minute
         pm_melody = pretty_midi.PrettyMIDI(initial_tempo=tempo)
         # TODO The program name can be changed to piano.
-        pm_melody_program = pretty_midi.instrument_name_to_program('Cello')
+        pm_melody_program = pretty_midi.instrument_name_to_program(
+            'Acoustic Grand Piano')
         pm_melody_instrument = pretty_midi.Instrument(
             program=pm_melody_program)
 
