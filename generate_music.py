@@ -12,9 +12,6 @@ from utils import multihot_to_note
 from utils import LENGTH_LIMIT, INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 from utils import RESOLUTION
 
-# MODEL_PATH = './models/20190426/lstm_model.h5'
-MODEL_PATH = './models/20190427/lstm_model.h5'
-
 
 def generate_note_list_from_interval_list(model, interval_list):
     ''' Generate note_list (melody) form an interval list.
@@ -138,10 +135,10 @@ def generate_note_list_from_interval_list(model, interval_list):
     return note_list
 
 
-def generate_note_list_from_bar_list(model, bar_list):
+def generate_note_list_from_bar_interval_list(model, bar_interval_list):
     ''' Generate music based on given bars information.
     Arg:
-    - bar_list: A list whose sublists are interval lists.
+    - bar_interval_list: A list whose sublists are interval lists.
 
     Return:
     - note_list: A list of notes, which represents melody.
@@ -195,7 +192,6 @@ def generate_note_list_from_bar_list(model, bar_list):
         # The code below is a mess...
         # TODO Improve it!
         if diff_units != 0:
-            print('diff_units:', diff_units)
             if diff_units > 0:
                 # Add one unit per loop
                 increment = -1
@@ -253,13 +249,13 @@ def generate_note_list_from_bar_list(model, bar_list):
 
         return note_list
 
-    # Flatten bar_list
-    interval_list = [itv for bar in bar_list for itv in bar]
+    # Flatten bar_interval_list
+    interval_list = [itv for bar in bar_interval_list for itv in bar]
 
     raw_note_list = generate_note_list_from_interval_list(model, interval_list)
 
     note_list = []
-    for bar in bar_list:
+    for bar in bar_interval_list:
         bar_note_list = []
         for _ in bar:
             # pop the first note from raw_note_list and
@@ -295,26 +291,46 @@ def pitch_list_to_interval_list(pitch_list):
     return interval_list
 
 
+def generate_midi_from_bar_pitch_list(model, bar_pitch_list, path, tempo=100):
+    ''' Generater midi file from given bar pitch list (a list whose sublist is
+    pitch list.)
+
+    Args:
+    - model: LSTM model.
+    - bar_pitch_list: A list whose sublist is pitch list.
+    - path: MIDI file output path.
+    - tempo: The speed of output (beats (quarter note) per minute).
+    '''
+    start_pitch = bar_pitch_list[0][0]
+
+    def bar_pitch_list_to_bar_interval_list(bar_pitch_list):
+        bar_interval_list = list(
+            map(pitch_list_to_interval_list, bar_pitch_list))
+        # We have to modify the first interval in a bar.
+        for idx, bar in enumerate(bar_interval_list):
+            # Skip the first interval
+            if idx == 0:
+                continue
+            # The current interval should be the current pitch minus the
+            # previous pitch.
+            bar[0] = bar_pitch_list[idx][0] - bar_pitch_list[idx - 1][-1]
+
+        return bar_interval_list
+
+    bar_interval_list = bar_pitch_list_to_bar_interval_list(bar_pitch_list)
+    note_list = generate_note_list_from_bar_interval_list(
+        model, bar_interval_list)
+
+    melody = MidiData.note_list_to_mididata(
+        note_list, start_pitch=start_pitch, tempo=tempo, res=RESOLUTION)
+    melody.write(path)
+
+
 if __name__ == '__main__':
+
+    MODEL_PATH = './models/20190427-dev/lstm_model.h5'
     model = load_model(MODEL_PATH)
 
     pitch_list = [60, 62, 64, 65, 67]
-    interval_list = pitch_list_to_interval_list(pitch_list)
-    bar_list = [interval_list, interval_list]
-    # note_list = generate_note_list_from_interval_list(model, interval_list)
-    note_list = generate_note_list_from_bar_list(model, bar_list)
-    print(note_list)
-    total_units = 0
-    for note in note_list:
-        total_units += note[1] + note[2]
-    print('total_units:', total_units)
-    melody = MidiData.note_list_to_mididata(note_list, res=RESOLUTION)
-    melody.write('./melody.mid')
-
-    # The following part is for test
-    # note = np.array([-2, 5, 3])
-    # phrase = [note] * 20
-    # multihot_input = np.array(phrase_to_multihot(phrase)).reshape(
-    # 1, LENGTH_LIMIT, INTERVAL_RANGE + DURATION_RANGE + REST_RANGE)
-    # predictions = model.predict(multihot_input, batch_size=1, verbose=0)
-    # print(predictions)
+    bar_pitch_list = [pitch_list, pitch_list]
+    generate_midi_from_bar_pitch_list(model, bar_pitch_list, './my_midi.mid')
