@@ -311,8 +311,6 @@ class MidiData():
         note_list = copy.deepcopy(note_list)
 
         time_per_unit = 60 * 4 * res / tempo
-        # time_per_unit = 0.12
-        print('time_per_unit:', time_per_unit)
 
         # resolution: ticks per quarter note
         # tempo: beats (quarter note) per minute
