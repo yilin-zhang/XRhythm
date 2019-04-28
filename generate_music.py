@@ -359,16 +359,18 @@ def generate_midi_from_bar_pitch_list(model,
 
 if __name__ == '__main__':
 
-    MODEL_PATH = './models/20190427-dev/lstm_model.h5'
+    MODEL_PATH = './models/201904282350/lstm_model.h5'
     model = load_model(MODEL_PATH)
 
-    pitch_list = [60, 62, 64, 65, 67]
-    bar_pitch_list = [pitch_list, [60, 62, 64]]
-    generate_midi_from_bar_pitch_list(
-        model, bar_pitch_list, './outputs', n_outputs=3)
-    # note_lists = generate_note_lists_from_interval_list(
-    # model, [2, 2, 2, 1, 2], 3)
+    c = 60
+    d = 62
+    e = 64
+    f = 65
+    g = 67
+    a = 69
+    b = 71
 
-    # note_lists = generate_note_lists_from_bar_interval_list(
-    # model, [[2, 2, 2], [1, 2]], 2)
-    # print(note_lists)
+    bar_pitch_list = [[c, c, g, g, a, a, g], [f, f, e, e, d, d, c],
+                      [c, c, g, g, a, a, g], [f, f, e, e, d, d, c]]
+    generate_midi_from_bar_pitch_list(
+        model, bar_pitch_list, './outputs', n_outputs=5)

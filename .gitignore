@@ -1,13 +1,11 @@
 /__pycache__
 /archives
-/pickle
 /processed_midi
 /raw_midi
-/statistics_figs
 /logs
 /dataset
 /models
+/outputs
 test.py
-dataset.tgz
 dataset.zip
 .projectile
