@@ -359,7 +359,7 @@ def generate_midi_from_bar_pitch_list(model,
 
 if __name__ == '__main__':
 
-    MODEL_PATH = './models/201904282350/lstm_model.h5'
+    MODEL_PATH = './models/201905011047/lstm_model.h5'
     model = load_model(MODEL_PATH)
 
     c = 60

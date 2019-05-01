@@ -4,7 +4,7 @@
 # External imports
 from keras.models import Model
 from keras.layers import Input, Dense, LSTM, Dropout, LeakyReLU
-from keras.optimizers import Adam
+from keras.optimizers import Adadelta
 from keras.callbacks import TensorBoard
 
 # Internal imports
@@ -23,7 +23,7 @@ n_outputs = DURATION_RANGE + REST_RANGE
 n_neurons = 256
 batch_size = 40
 n_epochs = 50
-learning_rate = 0.001
+# learning_rate = 0.0001
 dropout_rate = 0.3
 
 # These variables are related to batch size.
@@ -37,9 +37,12 @@ validation_steps = 4495
 train_path = DATASET_PATH + '/train'
 valid_path = DATASET_PATH + '/valid'
 
-# # Construct Model
+# Construct Model
 model_input = Input(shape=(n_steps, n_inputs))
 x = LSTM(n_neurons, activation='linear', return_sequences=True)(model_input)
+x = LeakyReLU()(x)
+x = Dropout(dropout_rate)(x)
+x = LSTM(n_neurons, activation='linear', return_sequences=True)(x)
 x = LeakyReLU()(x)
 x = Dropout(dropout_rate)(x)
 x = LSTM(n_neurons, activation='linear', return_sequences=True)(x)
@@ -54,7 +57,7 @@ rest_output = Dense(REST_RANGE, activation='softmax', name='rest_output')(x)
 model = Model(inputs=model_input, outputs=[duration_output, rest_output])
 
 model.compile(
-    optimizer=Adam(lr=learning_rate),
+    optimizer=Adadelta(),
     loss={
         'duration_output': 'categorical_crossentropy',
         'rest_output': 'categorical_crossentropy'
