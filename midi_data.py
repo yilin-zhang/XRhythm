@@ -324,12 +324,16 @@ class MidiData():
         last_pitch = start_pitch
         last_time_point = 0
 
-        for note in note_list:
+        for idx, note in enumerate(note_list):
             interval = note[0]
             duration = note[1]
             rest = note[2]
 
-            pitch = last_pitch + interval
+            if idx == 0:
+                pitch = last_pitch
+            else:
+                pitch = last_pitch + interval
+
             duration_time = duration * time_per_unit
             rest_time = rest * time_per_unit
 

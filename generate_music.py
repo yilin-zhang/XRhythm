@@ -31,8 +31,8 @@ def generate_note_lists_from_interval_list(model, interval_list, n_outputs):
         ''' Convert the float type predicted note to multi-hot array format.
 
         Args:
-        - predicted_duration: The predicted duration array, whose element is float
-        type.
+        - predicted_duration: The predicted duration array, whose element is
+        float type.
         - predicted_rest: The predicted rest array.
 
         Return:
@@ -323,6 +323,10 @@ def generate_midi_from_bar_pitch_list(model,
     - tempo: The speed of output (beats (quarter note) per minute).
     '''
     start_pitch = bar_pitch_list[0][0]
+    n_pitches = sum(1 for bar in bar_pitch_list for pitch in bar)
+
+    # Repeat bar_pitch_list, to obtain a resonbale initial state.
+    bar_pitch_list = bar_pitch_list * 2
 
     def bar_pitch_list_to_bar_interval_list(bar_pitch_list):
         bar_interval_list = list(
@@ -341,6 +345,7 @@ def generate_midi_from_bar_pitch_list(model,
     bar_interval_list = bar_pitch_list_to_bar_interval_list(bar_pitch_list)
     note_lists = generate_note_lists_from_bar_interval_list(
         model, bar_interval_list, n_outputs)
+    note_lists = [note_list[n_pitches:] for note_list in note_lists]
 
     time_stamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
 
@@ -359,7 +364,7 @@ def generate_midi_from_bar_pitch_list(model,
 
 if __name__ == '__main__':
 
-    MODEL_PATH = './models/201905011047/lstm_model.h5'
+    MODEL_PATH = './models/201905030320/lstm_model.h5'
     model = load_model(MODEL_PATH)
 
     c = 60
@@ -369,8 +374,16 @@ if __name__ == '__main__':
     g = 67
     a = 69
     b = 71
+    c2 = 72
+    d2 = 74
+    e2 = 76
+    f2 = 77
+    g2 = 79
 
     bar_pitch_list = [[c, c, g, g, a, a, g], [f, f, e, e, d, d, c],
+                      [g, g, f, f, e, e, d], [g, g, f, f, e, e, d],
                       [c, c, g, g, a, a, g], [f, f, e, e, d, d, c]]
-    generate_midi_from_bar_pitch_list(
-        model, bar_pitch_list, './outputs', n_outputs=5)
+    fjb = [[e, g, e, d, g, g, a], [e, e, g, d, e, g], [g, g, g, g, g, a],
+           [d, e, d, g], [d2, d2, e2, d2, e2, d2], [b, a, d2, g2],
+           [e2, d2, a, d2, e2], [b, b, d2, a, b, a, g]]
+    generate_midi_from_bar_pitch_list(model, fjb, './outputs', n_outputs=5)
