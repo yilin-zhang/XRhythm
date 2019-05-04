@@ -380,10 +380,11 @@ if __name__ == '__main__':
     f2 = 77
     g2 = 79
 
-    bar_pitch_list = [[c, c, g, g, a, a, g], [f, f, e, e, d, d, c],
-                      [g, g, f, f, e, e, d], [g, g, f, f, e, e, d],
-                      [c, c, g, g, a, a, g], [f, f, e, e, d, d, c]]
+    little_star = [[c, c, g, g, a, a, g], [f, f, e, e, d, d, c],
+                   [g, g, f, f, e, e, d], [g, g, f, f, e, e, d],
+                   [c, c, g, g, a, a, g], [f, f, e, e, d, d, c]]
     fjb = [[e, g, e, d, g, g, a], [e, e, g, d, e, g], [g, g, g, g, g, a],
            [d, e, d, g], [d2, d2, e2, d2, e2, d2], [b, a, d2, g2],
            [e2, d2, a, d2, e2], [b, b, d2, a, b, a, g]]
-    generate_midi_from_bar_pitch_list(model, fjb, './outputs', n_outputs=5)
+    generate_midi_from_bar_pitch_list(
+        model, little_star, './outputs', n_outputs=5)
