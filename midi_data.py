@@ -295,7 +295,7 @@ class MidiData():
         return instrument_list
 
     @staticmethod
-    def note_list_to_mididata(note_list, start_pitch=60, tempo=100,
+    def note_list_to_mididata(note_list, start_pitch=60, tempo=120,
                               res=1 / 16):
         ''' Convert a phrase to a `MidiData` object.
         Args:
