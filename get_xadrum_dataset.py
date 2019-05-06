@@ -7,7 +7,7 @@ from midi_data import MidiData
 from utils import get_file_path, get_phrases
 import os
 
-from utils import XADRUM_MIDI_PATH, LENGTH_LIMIT, XADRUM_DATASET_PATH
+from configs import XADRUM_MIDI_PATH, LENGTH_LIMIT, XADRUM_DATASET_PATH
 from get_dataset import dump_phrase_data, construct_dataset
 
 if __name__ == '__main__':

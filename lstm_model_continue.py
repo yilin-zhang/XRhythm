@@ -9,8 +9,8 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 from utils import gen_batch
 
 # import constants
-from utils import XADRUM_DATASET_PATH, LENGTH_LIMIT
-from utils import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
+from configs import XADRUM_DATASET_PATH, LENGTH_LIMIT
+from configs import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 
 # Fixed model parameters
 n_steps = LENGTH_LIMIT

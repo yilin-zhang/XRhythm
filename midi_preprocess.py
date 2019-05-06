@@ -6,8 +6,8 @@ from midi_data import MidiData
 from utils import get_file_path
 
 # import constants
-from utils import RAW_MIDI_PATH, PROCESSED_MIDI_PATH
-from utils import RESOLUTION, FILTER_RESOLUTION
+from configs import RAW_MIDI_PATH, PROCESSED_MIDI_PATH
+from configs import RESOLUTION, FILTER_RESOLUTION
 
 for midi_path, midi_file in get_file_path(RAW_MIDI_PATH, '.mid'):
     try:

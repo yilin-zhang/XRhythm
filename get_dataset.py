@@ -7,7 +7,7 @@ import pickle
 import os
 import random
 
-from utils import PROCESSED_MIDI_PATH, LENGTH_LIMIT, DATASET_PATH
+from configs import PROCESSED_MIDI_PATH, LENGTH_LIMIT, DATASET_PATH
 
 
 def dump_phrase_data(phrase_data, data_num, path):

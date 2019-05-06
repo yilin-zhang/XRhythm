@@ -1,14 +1,17 @@
 # # Calculate the batch numbers, to obtain a proper steps_per_epoch
 from utils import gen_batch
-from utils import LENGTH_LIMIT, DATASET_PATH, XADRUM_DATASET_PATH
+from configs import LENGTH_LIMIT, DATASET_PATH, XADRUM_DATASET_PATH
 
 dataset_path = XADRUM_DATASET_PATH
 
 n_steps = LENGTH_LIMIT
 batch_size = 5
-gen_train = gen_batch(dataset_path + '/train', n_steps, batch_size, overlap=False)
-gen_valid = gen_batch(dataset_path + '/valid', n_steps, batch_size, overlap=False)
-gen_test = gen_batch(dataset_path + '/test', n_steps, batch_size, overlap=False)
+gen_train = gen_batch(
+    dataset_path + '/train', n_steps, batch_size, overlap=False)
+gen_valid = gen_batch(
+    dataset_path + '/valid', n_steps, batch_size, overlap=False)
+gen_test = gen_batch(
+    dataset_path + '/test', n_steps, batch_size, overlap=False)
 
 n_train = 0
 n_valid = 0

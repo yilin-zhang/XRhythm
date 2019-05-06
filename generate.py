@@ -11,8 +11,8 @@ from datetime import datetime
 # Internal imports
 from midi_data import MidiData
 from utils import multihot_to_note
-from utils import LENGTH_LIMIT, INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
-from utils import RESOLUTION
+from configs import LENGTH_LIMIT, INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
+from configs import RESOLUTION
 
 
 def generate_note_lists_from_interval_list(model, interval_list, n_outputs):
