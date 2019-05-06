@@ -5,7 +5,7 @@
 from keras.models import Model
 from keras.layers import Input, Dense, LSTM, Dropout, LeakyReLU
 from keras.optimizers import Adadelta
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, ModelCheckpoint
 
 # Internal imports
 from utils import gen_batch
@@ -70,6 +70,8 @@ model.compile(
 
 # Set tensorboard callback
 tb_callback = TensorBoard(log_dir='./logs', batch_size=batch_size)
+model_save_path = "./models/saved-model-{epoch:02d}-{val_acc:.2f}.hdf5"
+mc_callback = ModelCheckpoint(filepath=model_save_path, monitor='val_acc')
 
 # Summary the model
 model.summary()
@@ -83,8 +85,8 @@ model.fit_generator(
     epochs=n_epochs,
     validation_data=gen_valid,
     validation_steps=validation_steps,
-    callbacks=[tb_callback],
+    callbacks=[tb_callback, mc_callback],
     workers=2,
     use_multiprocessing=True)
 
-model.save('lstm_model.h5')
+# model.save('lstm_model.h5')

@@ -160,12 +160,13 @@ def multihot_to_note(multihot_note):
     return note
 
 
-def gen_batch(dataset_path, n_steps, batch_size):
+def gen_batch(dataset_path, n_steps, batch_size, overlap=False):
     ''' Generate batch data from given dataset.
     Args:
     - dataset_path: The path to the dataset.
     - n_steps: The steps of RNN.
     - batch_size: batch size.
+    - overlap: Whether use overlap sampling or not.
 
     Returns:
     - X_batch: The batch dataset as inputs.
@@ -190,6 +191,19 @@ def gen_batch(dataset_path, n_steps, batch_size):
         rest_onehoe_phrase = list(map(select_rest_onehot, multihot_phrase))
         return rest_onehoe_phrase
 
+    def get_slices(n_steps, idx):
+        if overlap:
+            return slice(idx, idx + n_steps), slice(idx + 1, idx + n_steps + 1)
+        else:
+            return slice(idx * n_steps, (idx + 1) * n_steps), slice(
+                idx * n_steps + 1, (idx + 1) * n_steps + 1)
+
+    def get_loop_condition(n_steps, idx, phrase):
+        if overlap:
+            return idx + n_steps + 1 <= phrase.__len__()
+        else:
+            return (idx + 1) * n_steps + 1 <= phrase.__len__()
+
     while True:
         X_batch = []
         duration_batch = []
@@ -199,11 +213,7 @@ def gen_batch(dataset_path, n_steps, batch_size):
                 phrase_data = pickle.load(f)
             for phrase in phrase_data:
                 idx = 0
-                # TODO In this case, some phrase fragments will be abandoned.
-                # eg. the phrase length is 25, then 0~20 can be reserved,
-                # but 21~24 will be abandoned.
-                # There might be some better solutions.
-                while idx + n_steps + 1 <= phrase.__len__():
+                while get_loop_condition(n_steps, idx, phrase):
                     if X_batch.__len__() == batch_size:
                         X_batch = np.array(X_batch)
                         duration_batch = np.array(duration_batch)
@@ -215,14 +225,12 @@ def gen_batch(dataset_path, n_steps, batch_size):
                         X_batch = []
                         duration_batch = []
                         rest_batch = []
-                    X_batch.append(
-                        phrase_to_multihot(phrase[idx:idx + n_steps]))
+                    slice_x, slice_y = get_slices(n_steps, idx)
+                    X_batch.append(phrase_to_multihot(phrase[slice_x]))
                     duration_batch.append(
                         select_duration_for_phrase(
-                            phrase_to_multihot(
-                                phrase[idx + 1:idx + n_steps + 1])))
+                            phrase_to_multihot(phrase[slice_y])))
                     rest_batch.append(
                         select_rest_for_phrase(
-                            phrase_to_multihot(
-                                phrase[idx + 1:idx + n_steps + 1])))
+                            phrase_to_multihot(phrase[slice_y])))
                     idx += 1
