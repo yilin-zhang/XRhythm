@@ -2,7 +2,6 @@
 # Author: Yilin Zhang
 
 # External imports
-from keras.models import load_model
 import numpy as np
 import copy
 import os
