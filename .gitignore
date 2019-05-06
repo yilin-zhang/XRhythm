@@ -2,10 +2,11 @@
 /archives
 /processed_midi
 /raw_midi
+/xadrum_midi
 /logs
 /dataset
+/xadrum_dataset
 /models
 /outputs
 test.py
-dataset.zip
 .projectile
