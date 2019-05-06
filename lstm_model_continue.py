@@ -18,16 +18,16 @@ n_inputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
 n_outputs = DURATION_RANGE + REST_RANGE
 
 # Changeable model parameters (hyper parameters)
-batch_size = 40
-n_epochs = 100
+batch_size = 5
+n_epochs = 75
 initial_epoch = 50
 
 # These variables are related to batch size.
 # Obtain these two numbers by running test.py
 # Note that you MUST remove the outermost loop
 # in the function gen_batch (the definition is in utils.py).
-steps_per_epoch = 21132
-validation_steps = 4495
+steps_per_epoch = 155
+validation_steps = 48
 
 # Set dataset path
 train_path = XADRUM_DATASET_PATH + '/train'

@@ -364,7 +364,7 @@ def generate_midi_from_bar_pitch_list(model,
 
 if __name__ == '__main__':
 
-    MODEL_PATH = './models/201905030320/lstm_model.h5'
+    MODEL_PATH = './models/201905061246/lstm_model.h5'
     model = load_model(MODEL_PATH)
 
     c = 60
@@ -386,5 +386,4 @@ if __name__ == '__main__':
     fjb = [[e, g, e, d, g, g, a], [e, e, g, d, e, g], [g, g, g, g, g, a],
            [d, e, d, g], [d2, d2, e2, d2, e2, d2], [b, a, d2, g2],
            [e2, d2, a, d2, e2], [b, b, d2, a, b, a, g]]
-    generate_midi_from_bar_pitch_list(
-        model, little_star, './outputs', n_outputs=5)
+    generate_midi_from_bar_pitch_list(model, fjb, './outputs', n_outputs=5)
