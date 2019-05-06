@@ -26,8 +26,8 @@ initial_epoch = 50
 # Obtain these two numbers by running cal_batches.py
 # Note that you MUST remove the outermost loop
 # in the function gen_batch (the definition is in utils.py).
-steps_per_epoch = 3122
-validation_steps = 133
+steps_per_epoch = 202
+validation_steps = 11
 
 # Set dataset path
 train_path = XADRUM_DATASET_PATH + '/train'
