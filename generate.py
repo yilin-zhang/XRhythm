@@ -311,7 +311,7 @@ def generate_midi_from_bar_pitch_list(model,
                                       bar_pitch_list,
                                       path,
                                       n_outputs=10,
-                                      tempo=100):
+                                      tempo=120):
     ''' Generater midi file from given bar pitch list (a list whose sublist is
     pitch list.)
 
@@ -353,37 +353,42 @@ def generate_midi_from_bar_pitch_list(model,
         os.makedirs(path)
 
     for idx, note_list in enumerate(note_lists):
-        melody = MidiData.note_list_to_mididata(
+        midi_path = path + '/' + time_stamp + '_' + str(idx) + '.mid'
+        MidiData.note_list_to_mididata(
             note_lists[idx],
             start_pitch=start_pitch,
             tempo=tempo,
-            res=RESOLUTION)
+            res=RESOLUTION).write(midi_path)
+
+
+def generate_midi_from_pitch_list(model,
+                                  pitch_list,
+                                  path,
+                                  n_outputs=10,
+                                  tempo=120):
+    ''' Generater midi file from given pitch list.
+
+    Args:
+    - model: LSTM model.
+    - pitch_list: A list that contains pitches.
+    - path: MIDI file output path (should be a directory).
+    - n_outputs: The number of output midi files.
+    - tempo: The speed of output (beats (quarter note) per minute).
+    '''
+
+    start_pitch = pitch_list[0]
+    n_pitches = pitch_list.__len__()
+
+    # Repeat bar_pitch_list, to obtain a resonbale initial state.
+    pitch_list = pitch_list * 2
+
+    note_lists = generate_note_lists_from_interval_list(
+        model, pitch_list_to_interval_list(pitch_list), n_outputs=n_outputs)
+
+    time_stamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    for idx, note_list in enumerate(note_lists):
         midi_path = path + '/' + time_stamp + '_' + str(idx) + '.mid'
-        melody.write(midi_path)
-
-
-if __name__ == '__main__':
-
-    MODEL_PATH = './models/201905061246/lstm_model.h5'
-    model = load_model(MODEL_PATH)
-
-    c = 60
-    d = 62
-    e = 64
-    f = 65
-    g = 67
-    a = 69
-    b = 71
-    c2 = 72
-    d2 = 74
-    e2 = 76
-    f2 = 77
-    g2 = 79
-
-    little_star = [[c, c, g, g, a, a, g], [f, f, e, e, d, d, c],
-                   [g, g, f, f, e, e, d], [g, g, f, f, e, e, d],
-                   [c, c, g, g, a, a, g], [f, f, e, e, d, d, c]]
-    fjb = [[e, g, e, d, g, g, a], [e, e, g, d, e, g], [g, g, g, g, g, a],
-           [d, e, d, g], [d2, d2, e2, d2, e2, d2], [b, a, d2, g2],
-           [e2, d2, a, d2, e2], [b, b, d2, a, b, a, g]]
-    generate_midi_from_bar_pitch_list(model, fjb, './outputs', n_outputs=5)
+        MidiData.note_list_to_mididata(
+            note_list=note_list[n_pitches:],
+            start_pitch=start_pitch,
+            tempo=tempo).write(midi_path)

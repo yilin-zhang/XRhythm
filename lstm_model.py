@@ -23,11 +23,10 @@ n_outputs = DURATION_RANGE + REST_RANGE
 n_neurons = 256
 batch_size = 40
 n_epochs = 50
-# learning_rate = 0.0001
 dropout_rate = 0.3
 
 # These variables are related to batch size.
-# Obtain these two numbers by running test.py
+# Obtain these two numbers by running cal_batches.py
 # Note that you MUST remove the outermost loop
 # in the function gen_batch (the definition is in utils.py).
 steps_per_epoch = 21132

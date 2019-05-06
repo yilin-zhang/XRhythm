@@ -40,4 +40,6 @@ if __name__ == '__main__':
             data_num += 1
             phrase_data = []
 
+    # Actually after doing this, I manually put several files from
+    # valid and test to train.
     construct_dataset(XADRUM_DATASET_PATH, (0.7, 0.15, 0.15))

@@ -301,7 +301,7 @@ class MidiData():
         Args:
         - note_list: A list object corresponding to an instrument.
         - start_pitch: The pitch of the first note.
-        - time_per_unit: The actual time (represented as second) of one time
+        - tempo: Beats per minute.
         - res: resolution (the minimum beat)
         unit.
 
