@@ -190,44 +190,44 @@ def gen_batch(dataset_path, n_steps, batch_size):
         rest_onehoe_phrase = list(map(select_rest_onehot, multihot_phrase))
         return rest_onehoe_phrase
 
-    # while True:
-    X_batch = []
-    duration_batch = []
-    rest_batch = []
-    for data_path, data_file in get_file_path(dataset_path, '.pkl'):
-        with open(data_path, 'rb') as f:
-            phrase_data = pickle.load(f)
-        for phrase in phrase_data:
-            n_slice = 0
-            # TODO In this case, some phrase fragments will be abandoned.
-            # eg. the phrase length is 25, then 0~20 can be reserved,
-            # but 21~24 will be abandoned.
-            # There might be some better solutions.
-            while (n_slice + 1) * n_steps + 1 <= phrase.__len__():
-                if X_batch.__len__() == batch_size:
-                    # X_batch = np.swapaxes(np.array(X_batch), 0, 1)
-                    # y_batch = np.swapaxes(np.array(y_batch), 0, 1)
-                    X_batch = np.array(X_batch)
-                    duration_batch = np.array(duration_batch)
-                    rest_batch = np.array(rest_batch)
-                    yield (X_batch, {
-                        'duration_output': duration_batch,
-                        'rest_output': rest_batch
-                    })
-                    X_batch = []
-                    duration_batch = []
-                    rest_batch = []
-                X_batch.append(
-                    phrase_to_multihot(
-                        phrase[n_slice * n_steps:(n_slice + 1) * n_steps]))
-                duration_batch.append(
-                    select_duration_for_phrase(
+    while True:
+        X_batch = []
+        duration_batch = []
+        rest_batch = []
+        for data_path, data_file in get_file_path(dataset_path, '.pkl'):
+            with open(data_path, 'rb') as f:
+                phrase_data = pickle.load(f)
+            for phrase in phrase_data:
+                n_slice = 0
+                # TODO In this case, some phrase fragments will be abandoned.
+                # eg. the phrase length is 25, then 0~20 can be reserved,
+                # but 21~24 will be abandoned.
+                # There might be some better solutions.
+                while (n_slice + 1) * n_steps + 1 <= phrase.__len__():
+                    if X_batch.__len__() == batch_size:
+                        # X_batch = np.swapaxes(np.array(X_batch), 0, 1)
+                        # y_batch = np.swapaxes(np.array(y_batch), 0, 1)
+                        X_batch = np.array(X_batch)
+                        duration_batch = np.array(duration_batch)
+                        rest_batch = np.array(rest_batch)
+                        yield (X_batch, {
+                            'duration_output': duration_batch,
+                            'rest_output': rest_batch
+                        })
+                        X_batch = []
+                        duration_batch = []
+                        rest_batch = []
+                    X_batch.append(
                         phrase_to_multihot(
-                            phrase[n_slice * n_steps +
-                                   1:(n_slice + 1) * n_steps + 1])))
-                rest_batch.append(
-                    select_rest_for_phrase(
-                        phrase_to_multihot(
-                            phrase[n_slice * n_steps +
-                                   1:(n_slice + 1) * n_steps + 1])))
-                n_slice += 1
+                            phrase[n_slice * n_steps:(n_slice + 1) * n_steps]))
+                    duration_batch.append(
+                        select_duration_for_phrase(
+                            phrase_to_multihot(
+                                phrase[n_slice * n_steps +
+                                       1:(n_slice + 1) * n_steps + 1])))
+                    rest_batch.append(
+                        select_rest_for_phrase(
+                            phrase_to_multihot(
+                                phrase[n_slice * n_steps +
+                                       1:(n_slice + 1) * n_steps + 1])))
+                    n_slice += 1
