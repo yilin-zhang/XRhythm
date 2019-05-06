@@ -9,7 +9,7 @@ from keras.callbacks import TensorBoard
 from utils import gen_batch
 
 # import constants
-from utils import DATASET_PATH, LENGTH_LIMIT
+from utils import XADRUM_DATASET_PATH, LENGTH_LIMIT
 from utils import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 
 # Fixed model parameters
@@ -18,12 +18,9 @@ n_inputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
 n_outputs = DURATION_RANGE + REST_RANGE
 
 # Changeable model parameters (hyper parameters)
-n_neurons = 256
 batch_size = 40
 n_epochs = 100
 initial_epoch = 50
-# learning_rate = 0.0001
-dropout_rate = 0.3
 
 # These variables are related to batch size.
 # Obtain these two numbers by running test.py
@@ -33,39 +30,8 @@ steps_per_epoch = 21132
 validation_steps = 4495
 
 # Set dataset path
-train_path = DATASET_PATH + '/train'
-valid_path = DATASET_PATH + '/valid'
-
-# Construct Model
-# model_input = Input(shape=(n_steps, n_inputs))
-# x = LSTM(n_neurons, activation='linear', return_sequences=True)(model_input)
-# x = LeakyReLU()(x)
-# x = Dropout(dropout_rate)(x)
-# x = LSTM(n_neurons, activation='linear', return_sequences=True)(x)
-# x = LeakyReLU()(x)
-# x = Dropout(dropout_rate)(x)
-# x = LSTM(n_neurons, activation='linear', return_sequences=True)(x)
-# x = LeakyReLU()(x)
-# x = Dropout(dropout_rate)(x)
-# x = LSTM(n_neurons, activation='linear', return_sequences=True)(x)
-# x = LeakyReLU()(x)
-# x = Dropout(dropout_rate)(x)
-# duration_output = Dense(
-#     DURATION_RANGE, activation='softmax', name='duration_output')(x)
-# rest_output = Dense(REST_RANGE, activation='softmax', name='rest_output')(x)
-# model = Model(inputs=model_input, outputs=[duration_output, rest_output])
-
-# model.compile(
-#     optimizer=Adadelta(),
-#     loss={
-#         'duration_output': 'categorical_crossentropy',
-#         'rest_output': 'categorical_crossentropy'
-#     },
-#     loss_weights={
-#         'duration_output': 0.5,
-#         'rest_output': 0.5
-#     },
-#     metrics=['accuracy'])
+train_path = XADRUM_DATASET_PATH + '/train'
+valid_path = XADRUM_DATASET_PATH + '/valid'
 
 MODEL_PATH = './models/201905030320/lstm_model.h5'
 model = load_model(MODEL_PATH)
