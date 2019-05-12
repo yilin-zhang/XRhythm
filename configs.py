@@ -4,6 +4,7 @@
 RAW_MIDI_PATH = './raw_midi'
 PROCESSED_MIDI_PATH = './processed_midi'
 XADRUM_MIDI_PATH = './xadrum_midi'
+PROCESSED_XADRUM_MIDI_PATH = './xadrum_processed_midi'
 DATASET_PATH = './dataset'  # path to modern music dataset
 XADRUM_DATASET_PATH = './xadrum_dataset'
 
