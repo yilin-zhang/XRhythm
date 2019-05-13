@@ -2,16 +2,14 @@
 from utils import gen_batch
 from configs import LENGTH_LIMIT, DATASET_PATH, XADRUM_DATASET_PATH
 
+# You can change the following two variables and run this script
 dataset_path = XADRUM_DATASET_PATH
+batch_size = 5
 
 n_steps = LENGTH_LIMIT
-batch_size = 5
-gen_train = gen_batch(
-    dataset_path + '/train', n_steps, batch_size, overlap=False)
-gen_valid = gen_batch(
-    dataset_path + '/valid', n_steps, batch_size, overlap=False)
-gen_test = gen_batch(
-    dataset_path + '/test', n_steps, batch_size, overlap=False)
+gen_train = gen_batch(dataset_path + '/train', n_steps, batch_size, loop=False)
+gen_valid = gen_batch(dataset_path + '/valid', n_steps, batch_size, loop=False)
+gen_test = gen_batch(dataset_path + '/test', n_steps, batch_size, loop=False)
 
 n_train = 0
 n_valid = 0

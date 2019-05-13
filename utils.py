@@ -144,13 +144,14 @@ def multihot_to_note(multihot_note):
     return note
 
 
-def gen_batch(dataset_path, n_steps, batch_size, overlap=False):
+def gen_batch(dataset_path, n_steps, batch_size, overlap=False, loop=True):
     ''' Generate batch data from given dataset.
     Args:
     - dataset_path: The path to the dataset.
     - n_steps: The steps of RNN.
     - batch_size: batch size.
     - overlap: Whether use overlap sampling or not.
+    - loop: Whether looping the sampling process or not.
 
     Returns:
     - X_batch: The batch dataset as inputs.
@@ -218,3 +219,6 @@ def gen_batch(dataset_path, n_steps, batch_size, overlap=False):
                         select_rest_for_phrase(
                             phrase_to_multihot(phrase[slice_y])))
                     idx += 1
+
+        if loop is False:
+            break

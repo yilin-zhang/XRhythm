@@ -27,7 +27,6 @@ dropout_rate = 0.3
 
 # These variables are related to batch size.
 # Obtain these two numbers by running cal_batches.py
-# Note that you MUST remove the outermost loop
 # in the function gen_batch (the definition is in utils.py).
 steps_per_epoch = 21132
 validation_steps = 4495
