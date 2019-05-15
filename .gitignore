@@ -1,12 +1,7 @@
 /__pycache__
 /archives
-/logs
-/raw_midi
-/xadrum_midi
-/processed_midi
-/xadrum_processed_midi
-/dataset
-/xadrum_dataset
+/datasets
+/midi
 /models
 /outputs
 test.py

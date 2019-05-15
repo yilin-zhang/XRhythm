@@ -1,12 +1,12 @@
 # -*-coding: utf-8-*-
 # Author: Yilin Zhang
 
-RAW_MIDI_PATH = './raw_midi'
-PROCESSED_MIDI_PATH = './processed_midi'
-XADRUM_MIDI_PATH = './xadrum_midi'
-PROCESSED_XADRUM_MIDI_PATH = './xadrum_processed_midi'
-DATASET_PATH = './dataset'  # path to modern music dataset
-XADRUM_DATASET_PATH = './xadrum_dataset'
+RAW_MIDI_PATH = './midi/raw_midi'
+XADRUM_MIDI_PATH = './midi/xadrum_midi'
+PROCESSED_MIDI_PATH = './midi/processed_midi'
+PROCESSED_XADRUM_MIDI_PATH = './midi/xadrum_processed_midi'
+DATASET_PATH = './datasets/dataset'  # path to modern music dataset
+XADRUM_DATASET_PATH = './datasets/xadrum_dataset'
 
 RESOLUTION = 1 / 16
 FILTER_RESOLUTION = 1 / 16
