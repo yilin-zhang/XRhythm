@@ -85,8 +85,8 @@ mc_callback = ModelCheckpoint(filepath=model_save_path, monitor='val_loss')
 model.summary()
 
 # Fit model
-gen_train = gen_batch(train_path, n_steps, batch_size, overlap=True)
-gen_valid = gen_batch(valid_path, n_steps, batch_size, overlap=True)
+gen_train = gen_batch(train_path, n_steps, batch_size)
+gen_valid = gen_batch(valid_path, n_steps, batch_size)
 model.fit_generator(
     gen_train,
     steps_per_epoch=steps_per_epoch,

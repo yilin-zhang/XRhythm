@@ -36,7 +36,7 @@ train_path = DATASET_PATH + '/train'
 valid_path = DATASET_PATH + '/valid'
 
 # Construct Model
-model_input = Input(shape=(n_steps, n_inputs))
+model_input = Input(batch_shape=(None, n_steps, n_inputs))
 x = LSTM(n_neurons, activation='linear', return_sequences=True)(model_input)
 x = LeakyReLU()(x)
 x = Dropout(dropout_rate)(x)
