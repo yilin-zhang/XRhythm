@@ -68,7 +68,7 @@ model.compile(
 
 # Set tensorboard callback
 tb_callback = TensorBoard(log_dir='./logs', batch_size=batch_size)
-model_save_path = "./models/saved-model-{epoch:02d}-{val_acc:.2f}.hdf5"
+model_save_path = "./models/saved-model-{epoch:02d}-{val_loss:.2f}.hdf5"
 mc_callback = ModelCheckpoint(filepath=model_save_path, monitor='val_loss')
 
 # Summary the model
