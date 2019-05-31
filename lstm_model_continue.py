@@ -3,7 +3,7 @@
 
 # External imports
 from keras.models import Model, load_model
-from keras.layers import Input, Dense, LSTM, Dropout, LeakyReLU
+from keras.layers import Input, Dense, LSTM, Dropout
 from keras.optimizers import Adadelta
 from keras.callbacks import TensorBoard, ModelCheckpoint
 
@@ -43,16 +43,10 @@ model = load_model(MODEL_PATH)
 # Construct New Model
 model_input = Input(batch_shape=(None, n_steps, n_inputs))
 x = LSTM(n_neurons, activation='elu', return_sequences=True)(model_input)
-#x = LeakyReLU()(x)
 x = Dropout(dropout_rate)(x)
 x = LSTM(n_neurons, activation='elu', return_sequences=True)(x)
-#x = LeakyReLU()(x)
 x = Dropout(dropout_rate)(x)
 x = LSTM(n_neurons, activation='elu', return_sequences=True)(x)
-#x = LeakyReLU()(x)
-#x = Dropout(dropout_rate)(x)
-#x = LSTM(n_neurons, activation='linear', return_sequences=True)(x)
-#x = LeakyReLU()(x)
 x = Dropout(dropout_rate)(x)
 duration_output = Dense(
     DURATION_RANGE, activation='softmax', name='duration_output')(x)
