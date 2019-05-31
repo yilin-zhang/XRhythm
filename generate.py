@@ -420,6 +420,9 @@ def generate_midi_from_pitch_list(model,
     start_pitch = pitch_list[0]
     n_pitches = pitch_list.__len__()
 
+    # WORKAROUND To reduce the excessive randomness,
+    # here I try to generate twice the length of the original sequence,
+    # and take the last half.
     # Repeat bar_pitch_list, to obtain a resonbale initial state.
     pitch_list = pitch_list * 2
 
