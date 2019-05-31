@@ -14,13 +14,16 @@ from configs import LENGTH_LIMIT, INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 from configs import RESOLUTION
 
 
-def generate_note_lists_from_interval_list(model, interval_list, n_outputs):
+def generate_note_lists_from_interval_list(model, interval_list, n_outputs,
+                                           randomness):
     ''' Generate note_list (melody) form an interval list.
 
     Args:
     - model: LSTM model.
     - interval_list: A list of intervals.
     - n_outputs: The output number.
+    - randomness: Whether sampling the model output based on probability
+    distribution.
 
     Return:
     - note_lists: A list of note_list, the first dimension is n_outputs.
@@ -109,6 +112,40 @@ def generate_note_lists_from_interval_list(model, interval_list, n_outputs):
 
         return multihot_note
 
+    def sample(proba_array, randomness):
+        ''' Sample the model output.
+        - proba_array: The output of the model.
+        - randomness: Bool value. Decide, whether based on probability
+        distribution to sample.
+        '''
+        onehot_array = np.zeros(proba_array.shape)
+        # Sampling based on probability distribution
+        if randomness is True:
+            rand_num = np.random.rand()
+            slice_small = 0
+            for i in range(proba_array.size):
+                slice_big = slice_small + proba_array[i]
+                if rand_num >= slice_small and rand_num < slice_big:
+                    onehot_array[i] = 1
+                    break
+                slice_small = slice_big
+            # if rand_num is still bigger than slice_big
+            # it could happen, although at a small rate.
+            if rand_num > slice_big:
+                onehot_array[-1] = 1
+
+            return onehot_array
+        # WORKAROUND Sampling based on the biggest probability
+        # I tried sampling the result and construct a one-hot array,
+        # but it losses some randomness. So instead I just return
+        # proba_array.
+        # If you want to return a one-hot array, uncomment the following
+        # two commented lines, and return onehot_array.
+        else:
+            # max_idx = np.argmax(proba_array)
+            # onehot_array[max_idx] = 1
+            return proba_array
+
     batch_size = n_outputs
     batch_multihot_notes = [[] for _ in range(batch_size)]
     model_input = np.array([init_steps() for _ in range(batch_size)])
@@ -121,8 +158,8 @@ def generate_note_lists_from_interval_list(model, interval_list, n_outputs):
         # the second index is 0 because the batch size is 1.
         # the third index is -1 because we only need the last output.
         for i in range(batch_size):
-            last_predicted_duration = prediction[0][i][-1]
-            last_predicted_rest = prediction[1][i][-1]
+            last_predicted_duration = sample(prediction[0][i][-1], randomness)
+            last_predicted_rest = sample(prediction[1][i][-1], randomness)
             new_input = construct_new_input(
                 last_predicted_duration, last_predicted_rest,
                 interval_to_onehot(interval_list[step]))
@@ -141,12 +178,13 @@ def generate_note_lists_from_interval_list(model, interval_list, n_outputs):
 
 
 def generate_note_lists_from_bar_interval_list(model, bar_interval_list,
-                                               n_outputs):
+                                               n_outputs, randomness):
     ''' Generate music based on given bars information.
     Args:
     - model: LSTM model
     - bar_interval_list: A list whose sublists are interval lists.
     - n_outputs: The number of generated note lists.
+    - randomness: Whether sampling the model output based on probability
 
     Return:
     - note_list: A list of notes, which represents melody.
@@ -261,7 +299,7 @@ def generate_note_lists_from_bar_interval_list(model, bar_interval_list,
     interval_list = [itv for bar in bar_interval_list for itv in bar]
 
     raw_note_lists = generate_note_lists_from_interval_list(
-        model, interval_list, n_outputs)
+        model, interval_list, n_outputs, randomness)
 
     # Scale notes' durations and rests based on bars.
     note_lists = [[] for _ in range(n_outputs)]
@@ -310,9 +348,10 @@ def generate_midi_from_bar_pitch_list(model,
                                       bar_pitch_list,
                                       path,
                                       n_outputs=10,
-                                      tempo=120):
-    ''' Generater midi file from given bar pitch list (a list whose sublist is
-    pitch list.)
+                                      tempo=120,
+                                      randomness=False):
+    ''' **EXPERIMENTAL!** Generater midi file from given bar pitch list
+    (a list whose sublist is pitch list.)
 
     Args:
     - model: LSTM model.
@@ -320,6 +359,7 @@ def generate_midi_from_bar_pitch_list(model,
     - path: MIDI file output path (should be a directory).
     - n_outputs: The number of output midi files.
     - tempo: The speed of output (beats (quarter note) per minute).
+    - randomness: Whether sampling the model output based on probability
     '''
     start_pitch = bar_pitch_list[0][0]
     n_pitches = sum(1 for bar in bar_pitch_list for pitch in bar)
@@ -343,7 +383,7 @@ def generate_midi_from_bar_pitch_list(model,
 
     bar_interval_list = bar_pitch_list_to_bar_interval_list(bar_pitch_list)
     note_lists = generate_note_lists_from_bar_interval_list(
-        model, bar_interval_list, n_outputs)
+        model, bar_interval_list, n_outputs, randomness)
     note_lists = [note_list[n_pitches:] for note_list in note_lists]
 
     time_stamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
@@ -364,7 +404,8 @@ def generate_midi_from_pitch_list(model,
                                   pitch_list,
                                   path,
                                   n_outputs=10,
-                                  tempo=120):
+                                  tempo=120,
+                                  randomness=False):
     ''' Generater midi file from given pitch list.
 
     Args:
@@ -373,6 +414,7 @@ def generate_midi_from_pitch_list(model,
     - path: MIDI file output path (should be a directory).
     - n_outputs: The number of output midi files.
     - tempo: The speed of output (beats (quarter note) per minute).
+    - randomness: Whether sampling the model output based on probability
     '''
 
     start_pitch = pitch_list[0]
@@ -382,7 +424,7 @@ def generate_midi_from_pitch_list(model,
     pitch_list = pitch_list * 2
 
     note_lists = generate_note_lists_from_interval_list(
-        model, pitch_list_to_interval_list(pitch_list), n_outputs=n_outputs)
+        model, pitch_list_to_interval_list(pitch_list), n_outputs, randomness)
 
     time_stamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     for idx, note_list in enumerate(note_lists):
