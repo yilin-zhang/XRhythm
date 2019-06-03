@@ -19,7 +19,7 @@ n_steps = LENGTH_LIMIT
 n_inputs = INTERVAL_RANGE + DURATION_RANGE + REST_RANGE
 n_outputs = DURATION_RANGE + REST_RANGE
 
-# Hyper parameters
+# Hyper parameter
 n_neurons = 256
 
 
