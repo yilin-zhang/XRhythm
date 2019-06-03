@@ -1,9 +1,15 @@
-# # Calculate the batch numbers, to obtain a proper steps_per_epoch
+# -*-coding: utf-8-*-
+# Author: Yilin Zhang
+
+# Calculate the batch numbers, to obtain a proper steps_per_epoch
 from utils import gen_batch
 from configs import LENGTH_LIMIT, DATASET_PATH, XADRUM_DATASET_PATH
 
-# You can change the following two variables and run this script
+# Choose which dataset you want to check
+#dataset_path = DATASET_PATH
 dataset_path = XADRUM_DATASET_PATH
+
+# Confirm your batch size before running this script.
 batch_size = 5
 
 n_steps = LENGTH_LIMIT
