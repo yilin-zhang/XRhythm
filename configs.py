@@ -7,6 +7,8 @@ PROCESSED_MIDI_PATH = './midi/processed_midi'
 PROCESSED_XADRUM_MIDI_PATH = './midi/xadrum_processed_midi'
 DATASET_PATH = './datasets/dataset'  # path to modern music dataset
 XADRUM_DATASET_PATH = './datasets/xadrum_dataset'
+MODEL_PATH = './models'
+LOG_PATH = './logs'
 
 RESOLUTION = 1 / 16
 FILTER_RESOLUTION = 1 / 16
