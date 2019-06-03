@@ -5,6 +5,7 @@ import os
 import copy
 import numpy as np
 import pickle
+import random
 
 from configs import INTERVAL_THRESHOLD, DURATION_THRESHOLD, REST_THRESHOLD
 from configs import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
@@ -142,6 +143,65 @@ def multihot_to_note(multihot_note):
     # Note that in midi_data, note_to_array_for_instrument uses np.int8 too.
     note = np.array([interval, duration, rest], dtype=np.int8)
     return note
+
+
+def dump_phrase_data(phrase_data, data_num, path):
+    ''' Dump the given phrase data to a pickle file.
+    Args:
+    - phrase_data: A `list` object that contains several phrases. A phrase is
+      also a `list` object.
+    - data_num: The number of phrase_data, which is used as the file name.
+    - path: The output path. Note that this function will not help make the
+      directory.
+    '''
+    data_path = path + '/' + str(data_num) + '.pkl'
+    with open(data_path, 'wb') as f:
+        pickle.dump(phrase_data, f)
+
+
+def construct_dataset(path, proportion):
+    ''' Construct dataset by creating subfolders: training, validation, test.
+    Args:
+    - path: The path to the exist dataset folder.
+    - proportion: The proportion of training set, validation set and test set.
+    It can be a list or a tuple, which contains three numbers. The proportion
+    of these three numbers is the proportion of the three sets.
+    '''
+
+    # Set random seed
+    random.seed(42)
+
+    # Obtain file list
+    file_list = list(os.walk(path))[0][2]
+    random.shuffle(file_list)
+
+    # Calculate three proportions
+    prop_sum = sum(proportion)
+    train_prop = proportion[0] / prop_sum
+    val_prop = proportion[1] / prop_sum
+
+    # obtain the number of
+    n_files = file_list.__len__()
+    n_train = round(n_files * train_prop)
+    n_val = round(n_files * val_prop)
+
+    # create directory if it does not exist.
+    if not os.path.exists(path + '/train'):
+        os.makedirs(path + '/train')
+    if not os.path.exists(path + '/valid'):
+        os.makedirs(path + '/valid')
+    if not os.path.exists(path + '/test'):
+        os.makedirs(path + '/test')
+
+    idx = 0
+    for file_name in file_list:
+        if idx < n_train:
+            os.rename(path + '/' + file_name, path + '/train/' + file_name)
+        elif idx >= n_train and idx < n_train + n_val:
+            os.rename(path + '/' + file_name, path + '/valid/' + file_name)
+        else:
+            os.rename(path + '/' + file_name, path + '/test/' + file_name)
+        idx += 1
 
 
 def gen_batch(dataset_path, n_steps, batch_size, overlap=False, loop=True):
