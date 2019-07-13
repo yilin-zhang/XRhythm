@@ -57,10 +57,10 @@ datasets
 - `test.py`
 包含生成音乐的测试（示例）代码。
 
-- `midi_preprocess.py`
+- `preprocess_midi.py`
 运行该代码完成现代音乐 MIDI 文件的预处理。包括去除打击乐、量化和基于 Skyline 算法的旋律提取。
 
-- `xadrum_preprocess.py`
+- `preprocess_xadrum.py`
 运行该代码完成鼓乐 MIDI 文件的预处理，仅进行量化处理。
 
 - `get_dataset.py`
@@ -73,10 +73,10 @@ datasets
 运行该代码给定 pickle 数据文件的目录和 batch size 计算迭代一轮（epoch）需要的步数。
 输出的 `n_train` 和 `n_valid` 需分别对应赋值给 `lstm_model.py` 和 `lstm_model_continue.py` 中的 `steps_per_epoch` 和 `validation_steps` 。
 
-- `modern_train.py`
+- `train_modern.py`
 运行该代码将现代音乐数据送入训练。
 
-- `xadrum_train.py`
+- `train_xadrum.py`
 运行该代码加载已经使用现代音乐训练后的 LSTM 模型，将鼓乐数据送入训练。
 
 ### 函数与类定义代码
