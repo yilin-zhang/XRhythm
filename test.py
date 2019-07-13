@@ -2,7 +2,7 @@
 # Author: Yilin Zhang
 
 from keras.models import load_model
-from generate import generate_midi_from_pitch_list
+from xrlib.generate import generate_midi_from_pitch_list
 
 # Modern Music
 # model_path = './models/201905310621/saved-model-50-0.98.hdf5'

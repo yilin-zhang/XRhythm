@@ -2,12 +2,12 @@
 # Author: Yilin Zhang
 
 import os
-from midi_data import MidiData
-from utils import get_file_path
+from xrlib.midi_data import MidiData
+from xrlib.utils import get_file_path
 
 # import constants
-from configs import RAW_MIDI_PATH, PROCESSED_MIDI_PATH
-from configs import RESOLUTION, FILTER_RESOLUTION
+from xrlib.configs import RAW_MIDI_PATH, PROCESSED_MIDI_PATH
+from xrlib.configs import RESOLUTION, FILTER_RESOLUTION
 
 for midi_path, midi_file in get_file_path(RAW_MIDI_PATH, '.mid'):
     try:

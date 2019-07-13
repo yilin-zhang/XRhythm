@@ -7,8 +7,8 @@ import numpy as np
 import pickle
 import random
 
-from configs import INTERVAL_THRESHOLD, DURATION_THRESHOLD, REST_THRESHOLD
-from configs import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
+from xrlib.configs import INTERVAL_THRESHOLD, DURATION_THRESHOLD, REST_THRESHOLD
+from xrlib.configs import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 
 
 def get_file_path(directory, suffix):

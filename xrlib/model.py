@@ -8,11 +8,11 @@ from keras.optimizers import Adadelta
 from keras.callbacks import TensorBoard, ModelCheckpoint
 
 # Internal imports
-from utils import gen_batch
+from xrlib.utils import gen_batch
 
 # import constants
-from configs import MODEL_PATH, LOG_PATH, LENGTH_LIMIT
-from configs import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
+from xrlib.configs import MODEL_PATH, LOG_PATH, LENGTH_LIMIT
+from xrlib.configs import INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
 
 # Fixed model parameters
 n_steps = LENGTH_LIMIT

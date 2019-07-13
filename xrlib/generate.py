@@ -8,10 +8,10 @@ import os
 from datetime import datetime
 
 # Internal imports
-from midi_data import MidiData
-from utils import multihot_to_note
-from configs import LENGTH_LIMIT, INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
-from configs import RESOLUTION
+from xrlib.midi_data import MidiData
+from xrlib.utils import multihot_to_note
+from xrlib.configs import LENGTH_LIMIT, INTERVAL_RANGE, DURATION_RANGE, REST_RANGE
+from xrlib.configs import RESOLUTION
 
 
 def generate_note_lists_from_interval_list(model, interval_list, n_outputs,

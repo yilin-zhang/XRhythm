@@ -2,8 +2,8 @@
 # Author: Yilin Zhang
 
 # Calculate the batch numbers, to obtain a proper steps_per_epoch
-from utils import gen_batch
-from configs import LENGTH_LIMIT, DATASET_PATH, XADRUM_DATASET_PATH
+from xrlib.utils import gen_batch
+from xrlib.configs import LENGTH_LIMIT, DATASET_PATH, XADRUM_DATASET_PATH
 
 # Choose which dataset you want to check
 #dataset_path = DATASET_PATH

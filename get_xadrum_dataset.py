@@ -3,9 +3,9 @@
 
 import os
 
-from midi_data import MidiData
-from utils import get_file_path, get_phrases, dump_phrase_data, construct_dataset
-from configs import XADRUM_MIDI_PATH, LENGTH_LIMIT, XADRUM_DATASET_PATH
+from xrlib.midi_data import MidiData
+from xrlib.utils import get_file_path, get_phrases, dump_phrase_data, construct_dataset
+from xrlib.configs import XADRUM_MIDI_PATH, LENGTH_LIMIT, XADRUM_DATASET_PATH
 
 # create directory if it does not exist.
 if not os.path.exists(XADRUM_DATASET_PATH):

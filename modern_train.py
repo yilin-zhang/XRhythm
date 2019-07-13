@@ -1,8 +1,8 @@
 # -*-coding: utf-8-*-
 # Author: Yilin Zhang
 
-from model import XRModel
-from configs import DATASET_PATH
+from xrlib.model import XRModel
+from xrlib.configs import DATASET_PATH
 
 # Changeable parameters
 batch_size = 40

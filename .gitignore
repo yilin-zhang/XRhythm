@@ -5,4 +5,5 @@
 /models
 /outputs
 /logs
+/xrlib/__pycache__
 .projectile
