@@ -87,7 +87,7 @@ datasets
 定义了 `XRModel` 类，其中定义了 LSTM 模型，以及训练相关的类方法。
 
 - `generate.py`
-定义了一些与生成音乐相关的函数。主要函数： `generate_from_bar_pitch_list` 和 `generate_from_pitch_list` 。前者接受含有小节信息的音高序列作为参数，后者只接受音高序列作为参数。
+定义了 `RhythmGenerator` 类。主要方法： `generate_from_bar_pitch_list` 和 `generate_from_pitch_list` 。前者接受含有小节信息的音高序列作为参数，后者只接受音高序列作为参数。
 
 - `midi_data.py`
 定义了 `MidiData` 类，是基于 `pretty_midi` 提供的 `PrettyMidi` 类的封装，额外定义了一些方法。主要方法是 `dropdrum` 、 `quantize` 和 `skyline` 。
